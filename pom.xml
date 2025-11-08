@@ -76,7 +76,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>annotationProcessor</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -110,10 +109,6 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>11.16.0</version>
-                <configuration>
-                    <url>jdbc:h2:file:./target/foobar</url>
-                    <user>sa</user>
-                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>com.h2database</groupId>
