@@ -6,7 +6,12 @@ import lombok.Data;
 
 @MappedSuperclass
 @Data
-abstract class BaseEntity {
+public class BaseEntity {
+
+    protected BaseEntity() {
+        // Protected constructor to prevent direct instantiation
+    }
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
