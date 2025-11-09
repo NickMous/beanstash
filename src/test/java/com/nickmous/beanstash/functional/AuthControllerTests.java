@@ -74,4 +74,125 @@ public class AuthControllerTests {
                         .content(jsonContent))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void loginPost_ShouldReturn403_ForInvalidCredentials() throws Exception {
+        // Test invalid user credentials
+        AuthController.LoginRequest loginRequest = new AuthController.LoginRequest();
+        loginRequest.setUsername("nonexistentuser");
+        loginRequest.setPassword("wrongpassword");
+
+        String jsonContent = objectMapper.writeValueAsString(loginRequest);
+
+        mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    public void loginPost_ShouldReturn403_ForWrongPassword() throws Exception {
+        // Create test user with encoded password
+        User testUser = new User();
+        testUser.setUsername("testuser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword(passwordEncoder.encode("testpass123"));
+        testUser.setActive(true);
+        testUser.setCreatedAt(LocalDateTime.now());
+        testUser.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(testUser);
+
+        // Test wrong password
+        AuthController.LoginRequest loginRequest = new AuthController.LoginRequest();
+        loginRequest.setUsername("testuser");
+        loginRequest.setPassword("wrongpassword");
+        String jsonContent = objectMapper.writeValueAsString(loginRequest);
+
+        mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    public void loginPost_ShouldReturn403_ForInactiveUser() throws Exception {
+        // Create inactive test user
+        User testUser = new User();
+        testUser.setUsername("inactiveuser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword(passwordEncoder.encode("testpass123"));
+        testUser.setActive(false); // Inactive user
+        testUser.setCreatedAt(LocalDateTime.now());
+        testUser.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(testUser);
+
+        // Test inactive user credentials
+        AuthController.LoginRequest loginRequest = new AuthController.LoginRequest();
+        loginRequest.setUsername("inactiveuser");
+        loginRequest.setPassword("testpass123");
+        String jsonContent = objectMapper.writeValueAsString(loginRequest);
+
+        mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    public void loginPost_ShouldReturn403_ForDeletedUser() throws Exception {
+        // Create deleted test user
+        User testUser = new User();
+        testUser.setUsername("deleteduser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword(passwordEncoder.encode("testpass123"));
+        testUser.setActive(true);
+        testUser.setCreatedAt(LocalDateTime.now());
+        testUser.setUpdatedAt(LocalDateTime.now());
+        testUser.setDeletedAt(LocalDateTime.now()); // Soft deleted user
+        userRepository.save(testUser);
+
+        // Test deleted user credentials
+        AuthController.LoginRequest loginRequest = new AuthController.LoginRequest();
+        loginRequest.setUsername("deleteduser");
+        loginRequest.setPassword("testpass123");
+        String jsonContent = objectMapper.writeValueAsString(loginRequest);
+
+        mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Transactional
+    public void loginPost_returnsJwtToken_OnSuccessfulLogin() throws Exception {
+        // Create test user with encoded password
+        User testUser = new User();
+        testUser.setUsername("jwtuser");
+        testUser.setEmail("test@example.com");
+        testUser.setPassword(passwordEncoder.encode("jwtpass123"));
+        testUser.setActive(true);
+        testUser.setCreatedAt(LocalDateTime.now());
+        testUser.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(testUser);
+
+        // Test user credentials
+        AuthController.LoginRequest loginRequest = new AuthController.LoginRequest();
+        loginRequest.setUsername("jwtuser");
+        loginRequest.setPassword("jwtpass123");
+        String jsonContent = objectMapper.writeValueAsString(loginRequest);
+
+        mvc.perform(post("/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonContent))
+                .andExpect(status().isOk())
+                .andExpect(result -> {
+                    String responseBody = result.getResponse().getContentAsString();
+                    AuthController.AuthResponse authResponse = objectMapper.readValue(responseBody, AuthController.AuthResponse.class);
+                    assert authResponse.getToken() != null && !authResponse.getToken().isEmpty();
+                });
+    }
 }
