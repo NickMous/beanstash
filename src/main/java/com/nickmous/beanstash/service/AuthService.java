@@ -1,4 +1,4 @@
-package com.nickmous.beanstash.services;
+package com.nickmous.beanstash.service;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
