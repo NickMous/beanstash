@@ -24,10 +24,4 @@ public class User extends BaseEntity {
     private String password;
 
     private boolean isActive;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
 }
