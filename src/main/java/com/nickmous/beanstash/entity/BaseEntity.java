@@ -6,7 +6,7 @@ import lombok.Data;
 
 @MappedSuperclass
 @Data
-abstract public class BaseEntity {
+abstract class BaseEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;

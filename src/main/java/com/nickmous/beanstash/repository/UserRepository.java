@@ -1,9 +1,8 @@
 package com.nickmous.beanstash.repository;
 
 import com.nickmous.beanstash.entity.User;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends BaseRepository<User, Long> {
 
