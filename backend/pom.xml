@@ -8,8 +8,8 @@
 		<version>4.0.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.nickmous</groupId>
-	<artifactId>beanstash</artifactId>
+	<groupId>com.nickmous.beanstash</groupId>
+	<artifactId>beanstash-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>beanstash-backend</name>
 	<description>The backend for beanstash!</description>
