@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.nickmous.beanstash</groupId>
+		<artifactId>beanstash</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>beanstash-frontend</artifactId>
+	<packaging>pom</packaging>
+	<name>beanstash-frontend</name>
+	<description>The frontend for beanstash!</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>2.0.0</version>
+				<executions>
+					<execution>
+						<id>install-bun</id>
+						<goals>
+							<goal>install-bun</goal>
+						</goals>
+						<configuration>
+							<bunVersion>v1.3.9</bunVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>bun-install</id>
+						<goals>
+							<goal>bun</goal>
+						</goals>
+						<configuration>
+							<arguments>install --frozen-lockfile</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>bun-build</id>
+						<goals>
+							<goal>bun</goal>
+						</goals>
+						<phase>compile</phase>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>bun-lint</id>
+						<goals>
+							<goal>bun</goal>
+						</goals>
+						<phase>verify</phase>
+						<configuration>
+							<arguments>run lint</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
