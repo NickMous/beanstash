@@ -5,6 +5,7 @@
     <version>0.0.1</version>
     <packaging>pom</packaging>
     <modules>
+        <module>frontend</module>
         <module>backend</module>
     </modules>
 </project>
