@@ -33,7 +33,7 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
-		<error-prone.version>2.39.0</error-prone.version>
+		<error-prone.version>2.47.0</error-prone.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<springdoc.version>3.0.1</springdoc.version>
 		<testcontainers.version>1.21.4</testcontainers.version>
@@ -244,12 +244,12 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>7.14.0</version>
+				<version>7.20.0</version>
 			</plugin>
 			<plugin>
 				<groupId>io.swagger.codegen.v3</groupId>
 				<artifactId>swagger-codegen-maven-plugin</artifactId>
-				<version>3.0.68</version>
+				<version>3.0.78</version>
 			</plugin>
 			<plugin>
 				<groupId>org.gaul</groupId>
@@ -271,7 +271,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.13</version>
+				<version>0.8.14</version>
 				<executions>
 					<execution>
 						<goals>
@@ -290,12 +290,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.4</version>
+				<version>3.5.5</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.5.4</version>
+				<version>3.5.5</version>
 				<executions>
 					<execution>
 						<goals>
@@ -308,7 +308,7 @@
 			<plugin>
 				<groupId>org.owasp</groupId>
 				<artifactId>dependency-check-maven</artifactId>
-				<version>12.1.3</version>
+				<version>12.2.0</version>
 			</plugin>
 		</plugins>
 	</build>
