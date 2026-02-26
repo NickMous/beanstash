@@ -53,8 +53,8 @@ jobs:
           java-version: 25
           cache: maven
 
-      - name: Run integration tests
-        run: mvn verify --batch-mode -Dsurefire.skip=true
+      - name: Run unit and integration tests
+        run: mvn verify --batch-mode
 
       - name: Print code coverage
         run: "awk -F',' 'NR>1 { missed += $4; covered += $5 } END { total = missed + covered; printf \"Line coverage: %.2f%% (%d/%d)\n\", (total > 0 ? covered/total*100 : 0), covered, total }' backend/target/site/jacoco/jacoco.csv"
