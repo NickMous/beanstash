@@ -1,5 +1,3 @@
-ARG NODE_ENV=production
-
 # ============================================
 # Stage 1: Dependencies Installation Stage
 # ============================================
@@ -34,6 +32,7 @@ COPY --from=dependencies /app/node_modules ./node_modules
 # Copy application source code
 COPY . .
 
+ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -54,6 +53,7 @@ FROM oven/bun:1 AS runner
 WORKDIR /app
 
 # Set environment variables
+ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
