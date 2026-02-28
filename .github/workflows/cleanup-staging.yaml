@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout fleet-infra repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: NickMous/fleet-infra
           token: ${{ secrets.FLEET_REPO_TOKEN }}
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: Checkout fleet-infra repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: NickMous/fleet-infra
           token: ${{ secrets.FLEET_REPO_TOKEN }}
