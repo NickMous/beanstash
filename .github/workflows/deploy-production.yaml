@@ -145,12 +145,12 @@ jobs:
             # Create manifest for version tag (e.g., v1.0.0)
             docker buildx imagetools create -t "${IMAGE_BASE}:${VERSION}" \
               "${IMAGE_BASE}:${VERSION}-amd64"
-#              "${IMAGE_BASE}:${VERSION}-arm64"
+            #  "${IMAGE_BASE}:${VERSION}-arm64"
 
             # Create manifest for production-latest tag
             docker buildx imagetools create -t "${IMAGE_BASE}:production-latest" \
               "${IMAGE_BASE}:${VERSION}-amd64"
-#              "${IMAGE_BASE}:${VERSION}-arm64"
+            #  "${IMAGE_BASE}:${VERSION}-arm64"
 
             echo "✅ Multi-architecture manifest created for ${PROJECT}:${VERSION}"
 
