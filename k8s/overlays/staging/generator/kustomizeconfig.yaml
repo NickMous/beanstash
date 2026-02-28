@@ -1,0 +1,23 @@
+# Kustomize name reference configuration for Traefik CRDs
+# This tells kustomize how to update inline name references when namePrefix is applied
+nameReference:
+  - kind: Service
+    fieldSpecs:
+      # IngressRoute route services
+      - path: spec/routes/services/name
+        kind: IngressRoute
+  - kind: Middleware
+    fieldSpecs:
+      # IngressRoute route middlewares
+      - path: spec/routes/middlewares/name
+        kind: IngressRoute
+  - kind: Secret
+    fieldSpecs:
+      # Middleware basicAuth secret
+      - path: spec/basicAuth/secret
+        kind: Middleware
+  - kind: TLSOption
+    fieldSpecs:
+      # IngressRoute tls.options
+      - path: spec/tls/options/name
+        kind: IngressRoute

@@ -1,0 +1,7 @@
+# Staging frontend deployment patches
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beanstash-frontend
+spec:
+  replicas: 1

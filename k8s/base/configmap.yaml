@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beanstash-config
+  labels:
+    app.kubernetes.io/name: beanstash
+    app.kubernetes.io/component: application
+data:
+  SPRING_PROFILES_ACTIVE: prod
+  TZ: Europe/Amsterdam
+  POSTGRES_HOST: beanstash-postgres
+  NEXT_PUBLIC_API_URL: https://api.beanstash.org
