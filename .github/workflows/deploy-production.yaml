@@ -1,0 +1,212 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag to build (e.g., v1.0.0)'
+        required: true
+        default: 'v0.0.0-manual'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Build images in parallel on native runners for each architecture and project
+  build:
+    name: Build ${{ matrix.project }} (${{ matrix.platform }})
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            arch: amd64
+            project: backend
+            path: ./backend
+#          - platform: linux/arm64
+#            runner: ubuntu-24.04-arm
+#            arch: arm64
+#            project: backend
+#            path: ./backend
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            arch: amd64
+            project: frontend
+            path: ./frontend
+#          - platform: linux/arm64
+#            runner: ubuntu-24.04-arm
+#            arch: arm64
+#            project: frontend
+#            path: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Prepare Docker image name
+        id: docker
+        run: |
+          IMAGE_NAME=$(echo "${{ github.repository }}-${{ matrix.project }}" | tr '[:upper:]' '[:lower:]')
+          echo "image_name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Docker image: ${{ env.REGISTRY }}/$IMAGE_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}
+          tags: |
+            type=raw,value=${{ steps.version.outputs.tag }}-${{ matrix.arch }}
+
+      - name: Build and push ${{ matrix.project }} ${{ matrix.platform }} image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.path }}
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            SENTRY_RELEASE=${{ steps.version.outputs.tag }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache-prod-${{ matrix.arch }}
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache-prod-${{ matrix.arch }},mode=max
+
+  # Create multi-arch manifest and trigger Flux
+  # NOTE: Image tag updates are handled by Flux Image Automation (no git commits from CI)
+  deploy:
+    name: Create Manifest and Notify Flux
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://beanstash.org
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Create and push multi-arch manifests
+        run: |
+          VERSION="${{ steps.version.outputs.tag }}"
+
+          for PROJECT in backend frontend; do
+            IMAGE_BASE="${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')-${PROJECT}"
+
+            # Create manifest for version tag (e.g., v1.0.0)
+            docker buildx imagetools create -t "${IMAGE_BASE}:${VERSION}" \
+              "${IMAGE_BASE}:${VERSION}-amd64"
+#              "${IMAGE_BASE}:${VERSION}-arm64"
+
+            # Create manifest for production-latest tag
+            docker buildx imagetools create -t "${IMAGE_BASE}:production-latest" \
+              "${IMAGE_BASE}:${VERSION}-amd64"
+#              "${IMAGE_BASE}:${VERSION}-arm64"
+
+            echo "✅ Multi-architecture manifest created for ${PROJECT}:${VERSION}"
+
+            # Inspect the manifest
+            docker buildx imagetools inspect "${IMAGE_BASE}:${VERSION}"
+          done
+
+#      - name: Create Sentry release
+#        env:
+#          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#          SENTRY_ORG: beanstash
+#          SENTRY_PROJECT: production
+#          SENTRY_URL: https://sentry.nickmous.nl
+#        run: |
+#          curl -sL https://sentry.io/get-cli/ | bash
+#          RELEASE="${{ steps.version.outputs.tag }}"
+#          sentry-cli releases new "$RELEASE"
+#          sentry-cli releases set-commits "$RELEASE" --auto
+#          sentry-cli releases finalize "$RELEASE"
+#          sentry-cli releases deploys "$RELEASE" new -e production
+
+      - name: Trigger Flux reconciliation
+        if: vars.FLUX_WEBHOOK_ENABLED == 'true'
+        env:
+          FLUX_WEBHOOK_URL: ${{ secrets.FLUX_WEBHOOK_URL }}
+        run: |
+          # Notify Flux to scan for new image tags immediately
+          curl -X POST "$FLUX_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{"commit": "${{ github.sha }}"}' \
+            --fail --silent --show-error || echo "Webhook notification failed (non-fatal)"
+        continue-on-error: true
+
+      - name: Deployment summary
+        run: |
+          VERSION="${{ steps.version.outputs.tag }}"
+          echo "### 🚀 Production Image Built!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`${VERSION}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Production URLs:**" >> $GITHUB_STEP_SUMMARY
+          echo "  - [https://beanstash.org](https://beanstash.org) (frontend)" >> $GITHUB_STEP_SUMMARY
+          echo "  - [https://api.beanstash.org](https://api.beanstash.org) (backend API)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Images:**" >> $GITHUB_STEP_SUMMARY
+          echo "  - \`${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')-backend:${VERSION}\`" >> $GITHUB_STEP_SUMMARY
+          echo "  - \`${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')-frontend:${VERSION}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Platforms:** linux/arm64 (native), linux/amd64 (native)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployment Method:** Flux Image Automation" >> $GITHUB_STEP_SUMMARY
+          echo "Flux will detect the new image tag and automatically update the production manifest." >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "### ❌ Production Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the workflow logs for details." >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

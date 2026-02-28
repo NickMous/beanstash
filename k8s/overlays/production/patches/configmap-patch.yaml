@@ -1,0 +1,7 @@
+# Production ConfigMap patches
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beanstash-config
+data:
+  NEXT_PUBLIC_API_URL: https://api.beanstash.org

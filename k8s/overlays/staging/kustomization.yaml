@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference overlay for staging environments
+# Per-branch staging deployments use k8s/staging-branches/ instead
+
+namespace: beanstash-staging
+
+resources:
+  - ../../base
+  - ingress.yaml
+  - certificate.yaml
+  - secrets.sops.yaml
+  - middlewares.yaml
+
+patches:
+  - path: patches/deployment-patch.yaml
+  - path: patches/frontend-deployment-patch.yaml
+  - path: patches/configmap-patch.yaml
+
+# Add staging-specific labels
+labels:
+  - pairs:
+      app.kubernetes.io/instance: staging
+    includeSelectors: false
+
+images:
+  - name: beanstash-backend
+    newName: ghcr.io/nickmous/beanstash-backend
+    newTag: staging-latest
+  - name: beanstash-frontend
+    newName: ghcr.io/nickmous/beanstash-frontend
+    newTag: staging-latest

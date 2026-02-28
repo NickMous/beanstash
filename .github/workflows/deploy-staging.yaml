@@ -1,0 +1,287 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - '**'  # Deploy all branches to staging
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy (leave empty to use current branch)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    name: Build ${{ matrix.project }} for Staging
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ steps.url.outputs.url }}
+    permissions:
+      contents: write
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - project: backend
+            path: ./backend
+          - project: frontend
+            path: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Generate branch slug and sanitized values
+        id: branch
+        run: |
+          # Sanitize branch name: lowercase, alphanumeric + dash, max 42 chars
+          if [ -n "${{ github.event.inputs.branch }}" ]; then
+            BRANCH_NAME="${{ github.event.inputs.branch }}"
+          else
+            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          fi
+          BRANCH_SLUG=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-42 | sed 's/-$//')
+
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
+          echo "Branch: $BRANCH_NAME -> Slug: $BRANCH_SLUG"
+
+      - name: Prepare Docker image name
+        id: docker
+        run: |
+          IMAGE_NAME=$(echo "${{ github.repository }}-${{ matrix.project }}" | tr '[:upper:]' '[:lower:]')
+          echo "image_name=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Docker image: ${{ env.REGISTRY }}/$IMAGE_NAME"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=staging-${{ steps.branch.outputs.slug }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ matrix.path }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            SENTRY_RELEASE=sha-${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache,mode=max
+
+#      - name: Create Sentry release
+#        env:
+#          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+#          SENTRY_ORG: beanstash
+#          SENTRY_PROJECT: staging
+#          SENTRY_URL: https://sentry.nickmous.nl
+#        run: |
+#          curl -sL https://sentry.io/get-cli/ | bash
+#          RELEASE="sha-${{ github.sha }}"
+#          sentry-cli releases new "$RELEASE"
+#          sentry-cli releases set-commits "$RELEASE" --auto --ignore-missing
+#          sentry-cli releases finalize "$RELEASE"
+#          sentry-cli releases deploys "$RELEASE" new -e staging
+
+  deploy:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ steps.url.outputs.url }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref }}
+          path: source
+
+      - name: Generate branch slug
+        id: branch
+        run: |
+          if [ -n "${{ github.event.inputs.branch }}" ]; then
+            BRANCH_NAME="${{ github.event.inputs.branch }}"
+          else
+            BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          fi
+          BRANCH_SLUG=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-42 | sed 's/-$//')
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
+          echo "Branch: $BRANCH_NAME -> Slug: $BRANCH_SLUG"
+
+      - name: Checkout fleet-infra repo
+        uses: actions/checkout@v5
+        with:
+          repository: NickMous/fleet-infra
+          token: ${{ secrets.FLEET_REPO_TOKEN }}
+          path: fleet-config
+
+      - name: Sync base manifests to fleet repo
+        run: |
+          # Copy k8s/base from source to fleet repo (Kustomize can't fetch from private repos)
+          mkdir -p fleet-config/apps/beanstash/base
+          cp -r source/k8s/base/* fleet-config/apps/beanstash/base/
+          echo "Synced k8s/base to fleet-config/apps/beanstash/base"
+
+      - name: Create staging branch config
+        run: |
+          BRANCH_SLUG="${{ steps.branch.outputs.slug }}"
+          COMMIT_SHA="${{ github.sha }}"
+          BRANCH_DIR="fleet-config/apps/beanstash/staging-branches/${BRANCH_SLUG}"
+          GENERATOR_DIR="source/k8s/overlays/staging/generator"
+          OVERLAY_DIR="source/k8s/overlays/staging"
+
+          # Sed pattern: replace staging.DOMAIN with ${BRANCH_SLUG}.staging.DOMAIN for beanstash domains
+          DOMAIN_SED="s/staging\.\(beanstash\.org\)/${BRANCH_SLUG}.staging.\1/g; s/staging\.\(api\.beanstash\.org\)/${BRANCH_SLUG}.staging.\1/g"
+
+          # Create branch-specific directory
+          mkdir -p "${BRANCH_DIR}/patches"
+
+          # 1. Copy static files from generator
+          cp "${GENERATOR_DIR}/kustomizeconfig.yaml" "${BRANCH_DIR}/"
+
+          # 2. envsubst templates
+          export BRANCH_SLUG COMMIT_SHA
+          envsubst '${BRANCH_SLUG} ${COMMIT_SHA}' < "${GENERATOR_DIR}/kustomization.yaml.tmpl" \
+            > "${BRANCH_DIR}/kustomization.yaml"
+          envsubst '${BRANCH_SLUG}' < "${GENERATOR_DIR}/secrets.yaml.tmpl" \
+            > "${BRANCH_DIR}/secrets.yaml"
+
+          # 3. Derive from overlay with sed (hostname + TLS secretName replacement)
+          sed "${DOMAIN_SED}; s/secretName: beanstash-staging-tls/secretName: ${BRANCH_SLUG}-beanstash-staging-tls/g" \
+            "${OVERLAY_DIR}/ingress.yaml" > "${BRANCH_DIR}/ingress.yaml"
+          sed "${DOMAIN_SED}; s/secretName: beanstash-staging-tls/secretName: ${BRANCH_SLUG}-beanstash-staging-tls/g" \
+            "${OVERLAY_DIR}/certificate.yaml" > "${BRANCH_DIR}/certificate.yaml"
+
+          # 4. Copy from overlay as-is
+          cp "${OVERLAY_DIR}/secrets.sops.yaml" "${BRANCH_DIR}/secrets-sops.yaml"
+          cp "${OVERLAY_DIR}/middlewares.yaml" "${BRANCH_DIR}/"
+          cp "${OVERLAY_DIR}/patches/deployment-patch.yaml" "${BRANCH_DIR}/patches/"
+          cp "${OVERLAY_DIR}/patches/frontend-deployment-patch.yaml" "${BRANCH_DIR}/patches/"
+
+          # 5. Derive patch with sed (hostname replacement)
+          sed "${DOMAIN_SED}" "${OVERLAY_DIR}/patches/configmap-patch.yaml" \
+            > "${BRANCH_DIR}/patches/configmap-patch.yaml"
+
+          echo "Generated config for branch: ${BRANCH_SLUG}"
+          echo "=== Generated files ==="
+          ls -la "${BRANCH_DIR}/"
+          ls -la "${BRANCH_DIR}/patches/"
+
+      - name: Update root staging kustomization
+        run: |
+          # Rebuild the root kustomization.yaml with all branch directories
+          cd fleet-config/apps/beanstash/staging-branches
+
+          # Start with header
+          echo "# Root kustomization for staging branches" > kustomization.yaml
+          echo "# This file is auto-generated by GitHub Actions" >> kustomization.yaml
+          echo "apiVersion: kustomize.config.k8s.io/v1beta1" >> kustomization.yaml
+          echo "kind: Kustomization" >> kustomization.yaml
+          echo "" >> kustomization.yaml
+          echo "resources:" >> kustomization.yaml
+
+          # Add all branch directories (excluding generator, files starting with .)
+          for dir in */; do
+            if [ "$dir" != "generator/" ] && [ -f "${dir}kustomization.yaml" ]; then
+              echo "  - ${dir}" >> kustomization.yaml
+            fi
+          done
+
+          # If no branches, add empty resources
+          if ! grep -q "^  - " kustomization.yaml; then
+            echo "  []" >> kustomization.yaml
+          fi
+
+          echo "Updated root kustomization:"
+          cat kustomization.yaml
+
+      - name: Commit and push to fleet repo
+        run: |
+          BRANCH_SLUG="${{ steps.branch.outputs.slug }}"
+
+          cd fleet-config
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add apps/beanstash/base/ apps/beanstash/staging-branches/
+
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(flux): deploy staging ${BRANCH_SLUG}" \
+              -m "Image: ${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')-backend:sha-${{ github.sha }}" \
+              -m "Branch: ${{ steps.branch.outputs.name }}" \
+              -m "Commit: ${{ github.sha }}"
+
+            git push
+            echo "Pushed staging config for branch: ${BRANCH_SLUG}"
+          fi
+
+      - name: Trigger Flux reconciliation
+        if: vars.FLUX_WEBHOOK_ENABLED == 'true'
+        env:
+          FLUX_WEBHOOK_URL: ${{ secrets.FLUX_WEBHOOK_URL }}
+        run: |
+          # Notify Flux to reconcile immediately
+          curl -X POST "$FLUX_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{"branch": "${{ steps.branch.outputs.slug }}", "commit": "${{ github.sha }}"}' \
+            --fail --silent --show-error || echo "Webhook notification failed (non-fatal)"
+        continue-on-error: true
+
+      - name: Get staging URL
+        id: url
+        run: |
+          BRANCH_SLUG="${{ steps.branch.outputs.slug }}"
+          STAGING_URL="https://${BRANCH_SLUG}.staging.beanstash.org"
+          STAGING_API_URL="https://${BRANCH_SLUG}.staging.api.beanstash.org"
+          echo "url=$STAGING_URL" >> $GITHUB_OUTPUT
+          echo "### 🚀 Deployment Triggered!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ steps.branch.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Staging URLs:**" >> $GITHUB_STEP_SUMMARY
+          echo "  - [$STAGING_URL]($STAGING_URL) (frontend)" >> $GITHUB_STEP_SUMMARY
+          echo "  - [$STAGING_API_URL]($STAGING_API_URL) (backend API)" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.REGISTRY }}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')-backend:sha-${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⏳ Flux will automatically deploy the changes within a few minutes." >> $GITHUB_STEP_SUMMARY
+
+      - name: Output deployment info
+        run: |
+          echo "=========================================="
+          echo "🎉 Deployment Triggered!"
+          echo "=========================================="
+          echo "Branch: ${{ steps.branch.outputs.name }}"
+          echo "Staging URL: ${{ steps.url.outputs.url }}"
+          echo "Flux will pick up changes automatically."
+          echo "=========================================="

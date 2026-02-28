@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: beanstash-staging-tls
+  labels:
+    app.kubernetes.io/name: beanstash
+    app.kubernetes.io/component: certificate
+spec:
+  secretName: beanstash-staging-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - staging.beanstash.org
+    - staging.api.beanstash.org
+  usages:
+    - digital signature
+    - key encipherment
