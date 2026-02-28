@@ -1,0 +1,11 @@
+# SOPS configuration for encrypting Kubernetes secrets
+# Uses the same PGP key as fleet-infra repo
+
+creation_rules:
+  - path_regex: k8s/overlays/staging/.*\.sops\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    pgp: 05F6A512DD349B0E33C7F417CBB5F307693F111D
+
+  - path_regex: k8s/overlays/production/.*\.sops\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    pgp: 83C72E6A377F2E76D7FBE123E2BBA1C6C85F0DC5
