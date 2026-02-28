@@ -26,7 +26,7 @@ jobs:
         id: branch
         run: |
           BRANCH_NAME="${{ github.event.ref }}"
-          BRANCH_SLUG=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-42 | sed 's/-$//')
+          BRANCH_SLUG=$(echo "$BRANCH_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-30 | sed 's/-$//')
           echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "slug=$BRANCH_SLUG" >> $GITHUB_OUTPUT
           echo "Branch deleted: $BRANCH_NAME -> Slug: $BRANCH_SLUG"
@@ -126,7 +126,7 @@ jobs:
         id: env
         run: |
           ENV_NAME="${{ github.event.inputs.environment_name }}"
-          ENV_SLUG=$(echo "$ENV_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-42 | sed 's/-$//')
+          ENV_SLUG=$(echo "$ENV_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9-]/-/g' | cut -c1-30 | sed 's/-$//')
           echo "name=$ENV_NAME" >> $GITHUB_OUTPUT
           echo "slug=$ENV_SLUG" >> $GITHUB_OUTPUT
           echo "Environment: $ENV_NAME -> Slug: $ENV_SLUG"
