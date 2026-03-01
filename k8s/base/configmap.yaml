@@ -11,4 +11,4 @@ data:
   POSTGRES_HOST: beanstash-postgres
   NEXT_PUBLIC_API_URL: https://api.beanstash.org
   SENTRY_AUTO_INIT: "false"
-  JAVA_TOOL_OPTIONS: "-javaagent:sentry-opentelemetry-agent-8:33:0:jar"
+  JAVA_TOOL_OPTIONS: "-javaagent:sentry-opentelemetry-agent-8.33.0.jar"
