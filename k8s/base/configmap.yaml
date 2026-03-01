@@ -10,3 +10,8 @@ data:
   TZ: Europe/Amsterdam
   POSTGRES_HOST: beanstash-postgres
   NEXT_PUBLIC_API_URL: https://api.beanstash.org
+  SENTRY_AUTO_INIT: "false"
+  JAVA_TOOL_OPTIONS: "-javaagent:sentry-opentelemetry-agent.jar"
+  OTEL_TRACES_EXPORTER: "none"
+  OTEL_METRICS_EXPORTER: "none"
+  OTEL_LOGS_EXPORTER: "none"
