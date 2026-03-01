@@ -95,6 +95,7 @@ jobs:
           build-args: |
             SENTRY_RELEASE=${{ steps.version.outputs.tag }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache-prod-${{ matrix.arch }}
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache-prod-${{ matrix.arch }},mode=max
 
@@ -159,7 +160,7 @@ jobs:
             docker buildx imagetools inspect "${IMAGE_BASE}:${VERSION}"
           done
 
-      - name: Create Sentry release
+      - name: Create Sentry release (backend)
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: beanstash
@@ -167,6 +168,19 @@ jobs:
           SENTRY_URL: https://sentry.nickmous.nl
         run: |
           curl -sL https://sentry.io/get-cli/ | bash
+          RELEASE="${{ steps.version.outputs.tag }}"
+          sentry-cli releases new "$RELEASE"
+          sentry-cli releases set-commits "$RELEASE" --auto
+          sentry-cli releases finalize "$RELEASE"
+          sentry-cli releases deploys "$RELEASE" new -e production
+
+      - name: Create Sentry release (frontend)
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: beanstash
+          SENTRY_PROJECT: beanstash-prod-frontend
+          SENTRY_URL: https://sentry.nickmous.nl
+        run: |
           RELEASE="${{ steps.version.outputs.tag }}"
           sentry-cli releases new "$RELEASE"
           sentry-cli releases set-commits "$RELEASE" --auto

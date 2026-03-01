@@ -92,10 +92,11 @@ jobs:
           build-args: |
             SENTRY_RELEASE=sha-${{ github.sha }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+            NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache,mode=max
 
-      - name: Create Sentry release
+      - name: Create Sentry release (backend)
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: beanstash
@@ -103,6 +104,19 @@ jobs:
           SENTRY_URL: https://sentry.nickmous.nl
         run: |
           curl -sL https://sentry.io/get-cli/ | bash
+          RELEASE="sha-${{ github.sha }}"
+          sentry-cli releases new "$RELEASE"
+          sentry-cli releases set-commits "$RELEASE" --auto --ignore-missing
+          sentry-cli releases finalize "$RELEASE"
+          sentry-cli releases deploys "$RELEASE" new -e staging
+
+      - name: Create Sentry release (frontend)
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: beanstash
+          SENTRY_PROJECT: beanstash-stag-frontend
+          SENTRY_URL: https://sentry.nickmous.nl
+        run: |
           RELEASE="sha-${{ github.sha }}"
           sentry-cli releases new "$RELEASE"
           sentry-cli releases set-commits "$RELEASE" --auto --ignore-missing
