@@ -34,6 +34,7 @@
 	<properties>
 		<java.version>25</java.version>
 		<sentry.upload.skip>true</sentry.upload.skip>
+		<sentry.version>8.33.0</sentry.version>
 		<error-prone.version>2.48.0</error-prone.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<springdoc.version>3.0.2</springdoc.version>
