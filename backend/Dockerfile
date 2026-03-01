@@ -12,6 +12,7 @@ FROM eclipse-temurin:25-jre
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/src/main/resources/sentry.properties sentry.properties
 
 ADD https://repo1.maven.org/maven2/io/sentry/sentry-opentelemetry-agent/8.26.0/sentry-opentelemetry-agent-8.26.0.jar sentry-opentelemetry-agent.jar
 
