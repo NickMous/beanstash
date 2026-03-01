@@ -10,3 +10,4 @@ data:
   TZ: Europe/Amsterdam
   POSTGRES_HOST: beanstash-postgres
   NEXT_PUBLIC_API_URL: https://api.beanstash.org
+  SENTRY_AUTO_INIT: "false"
