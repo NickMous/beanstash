@@ -84,7 +84,8 @@ public final class Totp {
                 | (hash[offset + 3] & 0xFF);
 
             int otp = binary % POWER_OF_TEN[CODE_DIGITS];
-            return String.format("%0" + CODE_DIGITS + "d", otp);
+            String otpFormat = "%0" + CODE_DIGITS + "d";
+            return otpFormat.formatted(otp);
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new IllegalStateException("Failed to generate TOTP code", e);
         }
