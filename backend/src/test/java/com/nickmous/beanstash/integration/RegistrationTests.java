@@ -11,6 +11,8 @@ import com.nickmous.beanstash.configuration.TestcontainersConfig;
 import com.nickmous.beanstash.controller.dto.RegisterRequest;
 import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.totp.Totp;
+import com.nickmous.beanstash.entity.Authority;
+import com.nickmous.beanstash.entity.Role;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
 import java.time.Instant;
@@ -116,6 +118,25 @@ public class RegistrationTests {
 
         User updatedUser = userRepository.findByUsername("verifyuser");
         assertThat(updatedUser.isTotpEnabled()).isTrue();
+    }
+
+    @Test
+    void register_withValidData_assignsDefaultRole() throws Exception {
+        var request = new RegisterRequest("authdefaultuser", "authdefault@example.com", "securepassword1", "Auth", "Default");
+
+        mockMvc.perform(post("/auth/register")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk());
+
+        User user = userRepository.findByUsername("authdefaultuser");
+        assertThat(user.getRoles()).hasSize(1);
+        Role defaultRole = user.getRoles().iterator().next();
+        assertThat(defaultRole.getName()).isEqualTo("user");
+        assertThat(defaultRole.getAuthorities())
+            .extracting(Authority::getName)
+            .contains("package:read");
     }
 
     @Test
