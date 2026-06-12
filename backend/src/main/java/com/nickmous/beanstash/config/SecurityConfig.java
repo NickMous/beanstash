@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.web.webauthn.jackson.WebauthnJacksonModule;
 import org.springframework.security.web.webauthn.management.JdbcPublicKeyCredentialUserEntityRepository;
@@ -44,9 +45,25 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/")
                 .authenticated()
+                .requestMatchers("/api/v1/users/**")
+                .permitAll()
+                // Public read: gated by the authority (granted to everyone by default), not by
+                // authenticated(), so anonymous requests carrying user:read are allowed through.
+                .requestMatchers("/api/v1/user/**")
+                .hasAuthority("user:read")
+                .requestMatchers("/api/**")
+                .authenticated()
                 .anyRequest()
                 .authenticated()
             )
+            // Grant user:read to not-logged-in requests by default (authenticated requests get it
+            // via IpAuthorityFilter). This is what makes /api/v1/user/** publicly readable.
+            .anonymous(anonymous -> anonymous.authorities("ROLE_ANONYMOUS", "user:read"))
+            // Adjusts per-request authorities (adds a default authority now; IP-based
+            // withdraw/add can be enabled inside the filter later). Runs after
+            // authentication and before authorization so both request matchers and
+            // @PreAuthorize see the adjusted authorities.
+            .addFilterBefore(new IpAuthorityFilter(), AuthorizationFilter.class)
             .webAuthn(webAuthn -> webAuthn
                 .rpId(rpId)
                 .allowedOrigins(websiteOrigin)

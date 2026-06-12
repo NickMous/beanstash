@@ -1,4 +1,4 @@
-package com.nickmous.beanstash.controller.dto;
+package com.nickmous.beanstash.controller.dto.auth;
 
 import jakarta.validation.constraints.NotBlank;
 

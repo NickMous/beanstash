@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nickmous.beanstash.configuration.TestcontainersConfig;
-import com.nickmous.beanstash.controller.dto.PasskeyRegistrationOptionsRequest;
+import com.nickmous.beanstash.controller.dto.auth.PasskeyRegistrationOptionsRequest;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
 import org.junit.jupiter.api.Test;

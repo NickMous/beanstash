@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nickmous.beanstash.configuration.TestcontainersConfig;
-import com.nickmous.beanstash.controller.dto.LoginRequest;
-import com.nickmous.beanstash.controller.dto.RegisterRequest;
-import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
+import com.nickmous.beanstash.controller.dto.auth.LoginRequest;
+import com.nickmous.beanstash.controller.dto.auth.RegisterRequest;
+import com.nickmous.beanstash.controller.dto.auth.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.totp.Totp;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;

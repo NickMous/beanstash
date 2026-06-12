@@ -128,6 +128,32 @@
         }
       }
     },
+    "/api/v1/user/{username}" : {
+      "get" : {
+        "tags" : [ "user-controller" ],
+        "operationId" : "read",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/" : {
       "get" : {
         "tags" : [ "home-controller" ],
@@ -206,10 +232,10 @@
       "AuthenticationExtensionsClientOutputObject" : {
         "type" : "object",
         "properties" : {
+          "output" : { },
           "extensionId" : {
             "type" : "string"
-          },
-          "output" : { }
+          }
         }
       },
       "AuthenticationExtensionsClientOutputs" : {
@@ -341,10 +367,10 @@
       "AuthenticationExtensionsClientInput" : {
         "type" : "object",
         "properties" : {
+          "input" : { },
           "extensionId" : {
             "type" : "string"
-          },
-          "input" : { }
+          }
         }
       },
       "AuthenticationExtensionsClientInputs" : {
@@ -505,6 +531,23 @@
           }
         },
         "required" : [ "password", "username" ]
+      },
+      "ReadResponse" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          }
+        }
       }
     }
   }

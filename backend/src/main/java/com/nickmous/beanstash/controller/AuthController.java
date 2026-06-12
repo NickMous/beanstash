@@ -1,9 +1,9 @@
 package com.nickmous.beanstash.controller;
 
-import com.nickmous.beanstash.controller.dto.LoginRequest;
-import com.nickmous.beanstash.controller.dto.PasskeyRegistrationOptionsRequest;
-import com.nickmous.beanstash.controller.dto.RegisterRequest;
-import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
+import com.nickmous.beanstash.controller.dto.auth.LoginRequest;
+import com.nickmous.beanstash.controller.dto.auth.PasskeyRegistrationOptionsRequest;
+import com.nickmous.beanstash.controller.dto.auth.RegisterRequest;
+import com.nickmous.beanstash.controller.dto.auth.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.CustomUserDetailsService;
 import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.domain.security.passkey.PasskeyRegistrationService;
