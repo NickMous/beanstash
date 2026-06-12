@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.nickmous.beanstash.domain.security.AuthorityService;
+import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.domain.security.passkey.PasskeyRegistrationService;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
@@ -31,7 +31,7 @@ class PasskeyRegistrationServiceTest {
     private WebAuthnRelyingPartyOperations rpOps;
 
     @Mock
-    private AuthorityService authorityService;
+    private RoleService roleService;
 
     @InjectMocks
     private PasskeyRegistrationService service;
@@ -88,7 +88,7 @@ class PasskeyRegistrationServiceTest {
     }
 
     @Test
-    void requestRegistrationOptions_assignsDefaultAuthorities() {
+    void requestRegistrationOptions_assignsDefaultRole() {
         when(userRepository.findByUsername("newuser")).thenReturn(null);
         when(rpOps.createPublicKeyCredentialCreationOptions(any()))
             .thenReturn(PublicKeyCredentialCreationOptions.builder().build());
@@ -96,7 +96,7 @@ class PasskeyRegistrationServiceTest {
         service.requestRegistrationOptions("newuser", "new@test.com", "First", "Last");
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(authorityService).assignDefaultAuthorities(userCaptor.capture());
+        verify(roleService).assignDefaultRole(userCaptor.capture());
         assertThat(userCaptor.getValue().getUsername()).isEqualTo("newuser");
     }
 

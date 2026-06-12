@@ -1,6 +1,6 @@
 package com.nickmous.beanstash.domain.security.passkey;
 
-import com.nickmous.beanstash.domain.security.AuthorityService;
+import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
 import java.util.List;
@@ -19,7 +19,7 @@ public class PasskeyRegistrationService {
 
     private final UserRepository userRepository;
     private final WebAuthnRelyingPartyOperations rpOps;
-    private final AuthorityService authorityService;
+    private final RoleService roleService;
 
     public PublicKeyCredentialCreationOptions requestRegistrationOptions(
             String username,
@@ -45,7 +45,7 @@ public class PasskeyRegistrationService {
                 rpOps.createPublicKeyCredentialCreationOptions(optionsRequest);
 
         userRepository.save(user);
-        authorityService.assignDefaultAuthorities(user);
+        roleService.assignDefaultRole(user);
 
         return creationOptions;
     }

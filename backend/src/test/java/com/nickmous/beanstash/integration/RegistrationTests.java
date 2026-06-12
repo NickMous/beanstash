@@ -11,8 +11,9 @@ import com.nickmous.beanstash.configuration.TestcontainersConfig;
 import com.nickmous.beanstash.controller.dto.RegisterRequest;
 import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.totp.Totp;
+import com.nickmous.beanstash.entity.Authority;
+import com.nickmous.beanstash.entity.Role;
 import com.nickmous.beanstash.entity.User;
-import com.nickmous.beanstash.repository.AuthorityRepository;
 import com.nickmous.beanstash.repository.UserRepository;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
@@ -39,9 +40,6 @@ public class RegistrationTests {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private AuthorityRepository authorityRepository;
 
     @Test
     void register_withValidData_returnsTotpSetup() throws Exception {
@@ -123,7 +121,7 @@ public class RegistrationTests {
     }
 
     @Test
-    void register_withValidData_assignsDefaultAuthority() throws Exception {
+    void register_withValidData_assignsDefaultRole() throws Exception {
         var request = new RegisterRequest("authdefaultuser", "authdefault@example.com", "securepassword1", "Auth", "Default");
 
         mockMvc.perform(post("/auth/register")
@@ -133,8 +131,12 @@ public class RegistrationTests {
             .andExpect(status().isOk());
 
         User user = userRepository.findByUsername("authdefaultuser");
-        assertThat(user.getAuthorities()).hasSize(1);
-        assertThat(user.getAuthorities().iterator().next().getName()).isEqualTo("package:read");
+        assertThat(user.getRoles()).hasSize(1);
+        Role defaultRole = user.getRoles().iterator().next();
+        assertThat(defaultRole.getName()).isEqualTo("user");
+        assertThat(defaultRole.getAuthorities())
+            .extracting(Authority::getName)
+            .contains("package:read");
     }
 
     @Test

@@ -4,8 +4,8 @@ import com.nickmous.beanstash.controller.dto.LoginRequest;
 import com.nickmous.beanstash.controller.dto.PasskeyRegistrationOptionsRequest;
 import com.nickmous.beanstash.controller.dto.RegisterRequest;
 import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
-import com.nickmous.beanstash.domain.security.AuthorityService;
 import com.nickmous.beanstash.domain.security.CustomUserDetailsService;
+import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.domain.security.passkey.PasskeyRegistrationService;
 import com.nickmous.beanstash.domain.security.totp.TotpService;
 import com.nickmous.beanstash.domain.security.totp.TotpSetupResponse;
@@ -41,7 +41,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final TotpService totpService;
     private final PasskeyRegistrationService passkeyRegistrationService;
-    private final AuthorityService authorityService;
+    private final RoleService roleService;
     private final CustomUserDetailsService customUserDetailsService;
 
     @PostMapping("/register")
@@ -58,7 +58,7 @@ public class AuthController {
         user.setLastName(request.lastName());
 
         TotpSetupResponse totpSetup = totpService.setupTotp(user);
-        authorityService.assignDefaultAuthorities(user);
+        roleService.assignDefaultRole(user);
         return ResponseEntity.ok(totpSetup);
     }
 

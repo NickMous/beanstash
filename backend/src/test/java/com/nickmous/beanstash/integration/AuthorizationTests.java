@@ -3,8 +3,8 @@ package com.nickmous.beanstash.integration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.nickmous.beanstash.domain.security.AuthorityService;
 import com.nickmous.beanstash.domain.security.CustomUserDetailsService;
+import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.domain.security.passkey.PasskeyRegistrationService;
 import com.nickmous.beanstash.domain.security.totp.TotpService;
 import com.nickmous.beanstash.repository.UserRepository;
@@ -38,7 +38,7 @@ public class AuthorizationTests {
     private PasskeyRegistrationService passkeyRegistrationService;
 
     @MockitoBean
-    private AuthorityService authorityService;
+    private RoleService roleService;
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
