@@ -2,7 +2,9 @@ package com.nickmous.beanstash.domain.security;
 
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,8 +27,15 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found: " + username);
         }
 
-        List<SimpleGrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
-            .map(authority -> new SimpleGrantedAuthority(authority.getName()))
+        Set<String> authorityNames = new LinkedHashSet<>();
+        user.getAuthorities()
+            .forEach(authority -> authorityNames.add(authority.getName()));
+        user.getRoles()
+            .forEach(role -> role.getAuthorities()
+                .forEach(authority -> authorityNames.add(authority.getName())));
+
+        List<SimpleGrantedAuthority> grantedAuthorities = authorityNames.stream()
+            .map(SimpleGrantedAuthority::new)
             .toList();
 
         return org.springframework.security.core.userdetails.User.builder()
