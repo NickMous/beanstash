@@ -41,7 +41,7 @@ public class PasskeyRegistrationTests {
         var request = new PasskeyRegistrationOptionsRequest(
             "passkeyuser", "passkey@example.com", "Passkey", "User");
 
-        mockMvc.perform(post("/auth/register/passkey/options")
+        mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -56,7 +56,7 @@ public class PasskeyRegistrationTests {
         var request = new PasskeyRegistrationOptionsRequest(
             "pknopassword", "pknp@example.com", "PK", "NoPw");
 
-        mockMvc.perform(post("/auth/register/passkey/options")
+        mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -73,13 +73,13 @@ public class PasskeyRegistrationTests {
         var request = new PasskeyRegistrationOptionsRequest(
             "pkdupuser", "pkdup@example.com", "Dup", "User");
 
-        mockMvc.perform(post("/auth/register/passkey/options")
+        mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk());
 
-        mockMvc.perform(post("/auth/register/passkey/options")
+        mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -92,7 +92,7 @@ public class PasskeyRegistrationTests {
             {"username": ""}
             """;
 
-        mockMvc.perform(post("/auth/register/passkey/options")
+        mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -105,7 +105,7 @@ public class PasskeyRegistrationTests {
             {"credential": {}, "label": "test"}
             """;
 
-        mockMvc.perform(post("/auth/register/passkey")
+        mockMvc.perform(post("/api/v1/auth/register/passkey")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))

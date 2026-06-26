@@ -49,7 +49,7 @@ public class AuthorityIntegrationTests {
     void registeredUser_canAccessSecuredEndpoint() throws Exception {
         var registerRequest = new RegisterRequest("authflowuser", "authflow@example.com", "securepassword1", "Auth", "Flow");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
@@ -58,7 +58,7 @@ public class AuthorityIntegrationTests {
         User user = userRepository.findByUsername("authflowuser");
         String code = Totp.generateCode(user.getTotpSecret(), Instant.now());
 
-        mockMvc.perform(post("/auth/register/verify-totp")
+        mockMvc.perform(post("/api/v1/auth/register/verify-totp")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new VerifyTotpRequest("authflowuser", code))))
@@ -67,7 +67,7 @@ public class AuthorityIntegrationTests {
         user = userRepository.findByUsername("authflowuser");
         String loginCode = Totp.generateCode(user.getTotpSecret(), Instant.now());
 
-        MvcResult loginResult = mockMvc.perform(post("/auth/login")
+        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new LoginRequest("authflowuser", "securepassword1", loginCode))))
@@ -82,7 +82,7 @@ public class AuthorityIntegrationTests {
             .extracting(GrantedAuthority::getAuthority)
             .contains("package:read");
 
-        mockMvc.perform(get("/").session(session))
+        mockMvc.perform(get("/api/v1/").session(session))
             .andExpect(status().isOk());
     }
 }

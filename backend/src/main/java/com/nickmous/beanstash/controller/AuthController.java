@@ -44,7 +44,7 @@ public class AuthController {
     private final RoleService roleService;
     private final CustomUserDetailsService customUserDetailsService;
 
-    @PostMapping("/register")
+    @PostMapping(path = "/register", version = "v1")
     public ResponseEntity<TotpSetupResponse> register(@Valid @RequestBody RegisterRequest request) {
         if (userRepository.findByUsername(request.username()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -62,7 +62,7 @@ public class AuthController {
         return ResponseEntity.ok(totpSetup);
     }
 
-    @PostMapping("/register/verify-totp")
+    @PostMapping(path = "/register/verify-totp", version = "v1")
     public ResponseEntity<Void> verifyTotp(@Valid @RequestBody VerifyTotpRequest request) {
         User user = userRepository.findByUsername(request.username());
         if (user == null) {
@@ -76,7 +76,7 @@ public class AuthController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/login")
+    @PostMapping(path = "/login", version = "v1")
     public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         User user = userRepository.findByUsername(request.username());
         if (user == null || user.getPassword() == null || !passwordEncoder.matches(request.password(), user.getPassword())) {
@@ -105,7 +105,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/register/passkey/options")
+    @PostMapping(path = "/register/passkey/options", version = "v1")
     public ResponseEntity<PublicKeyCredentialCreationOptions> passkeyRegistrationOptions(
             @Valid @RequestBody PasskeyRegistrationOptionsRequest request,
             HttpServletRequest httpRequest,
@@ -123,7 +123,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register/passkey")
+    @PostMapping(path = "/register/passkey", version = "v1")
     public ResponseEntity<Void> completePasskeyRegistration(
             @RequestBody RelyingPartyPublicKey publicKey,
             HttpServletRequest httpRequest) {

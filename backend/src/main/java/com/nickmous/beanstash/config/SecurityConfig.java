@@ -37,19 +37,19 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests((authorize)
                 -> authorize
-                .requestMatchers("/auth/**")
+                .requestMatchers("/api/*/auth/**")
                 .permitAll()
                 .requestMatchers("/actuator/health")
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers("/")
+                .requestMatchers("/api/*/")
                 .authenticated()
-                .requestMatchers("/api/v1/users/**")
+                .requestMatchers("/api/*/users/**")
                 .permitAll()
                 // Public read: gated by the authority (granted to everyone by default), not by
                 // authenticated(), so anonymous requests carrying user:read are allowed through.
-                .requestMatchers("/api/v1/user/**")
+                .requestMatchers("/api/*/user/**")
                 .hasAuthority("user:read")
                 .requestMatchers("/api/**")
                 .authenticated()

@@ -52,7 +52,17 @@ public class OpenApiDocsExportTests {
         JsonNode spec = objectMapper.readTree(body);
 
         assertThat(spec.path("openapi").asText()).startsWith("3.");
-        assertThat(spec.path("paths").has("/auth/login")).isTrue();
+        // Auth endpoints now sit under the versioned prefix (e.g. /api/{version}/auth/login),
+        // so match by suffix rather than the old unversioned literal.
+        boolean hasAuthLogin = false;
+        java.util.Iterator<String> pathNames = spec.path("paths").fieldNames();
+        while (pathNames.hasNext()) {
+            if (pathNames.next().endsWith("/auth/login")) {
+                hasAuthLogin = true;
+                break;
+            }
+        }
+        assertThat(hasAuthLogin).isTrue();
 
         String pretty = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(spec);
         Files.writeString(SPEC_PATH, pretty + System.lineSeparator());

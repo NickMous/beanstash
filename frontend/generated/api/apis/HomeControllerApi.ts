@@ -56,7 +56,7 @@ export class HomeControllerApi extends runtime.BaseAPI implements HomeController
         const headerParameters: runtime.HTTPHeaders = {};
 
 
-        let urlPath = `/`;
+        let urlPath = `/api/v1`;
 
         return {
             path: urlPath,

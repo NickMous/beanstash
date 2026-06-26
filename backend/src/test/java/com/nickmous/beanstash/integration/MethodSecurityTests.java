@@ -57,7 +57,7 @@ public class MethodSecurityTests {
 
     @Test
     void authenticatedUserWithRequiredAuthority_returns200() throws Exception {
-        mockMvc.perform(get("/")
+        mockMvc.perform(get("/api/v1/")
                 .with(SecurityMockMvcRequestPostProcessors.user("testuser")
                     .authorities(new SimpleGrantedAuthority("package:read"))))
             .andExpect(status().isOk());
@@ -65,7 +65,7 @@ public class MethodSecurityTests {
 
     @Test
     void authenticatedUserWithoutRequiredAuthority_returns403() throws Exception {
-        mockMvc.perform(get("/")
+        mockMvc.perform(get("/api/v1/")
                 .with(SecurityMockMvcRequestPostProcessors.user("testuser")
                     .authorities(new SimpleGrantedAuthority("other:permission"))))
             .andExpect(status().isForbidden());

@@ -1,6 +1,5 @@
 package com.nickmous.beanstash.controller;
 
-import com.nickmous.beanstash.controller.dto.user.request.ReadRequest;
 import com.nickmous.beanstash.controller.dto.user.response.ReadResponse;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.entity.UserType;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private UserRepository userRepository;
 
-    @GetMapping("/api/v1/users")
+    @GetMapping(path = "/users", version = "v1")
     @PreAuthorize("hasAuthority('user:read')")
     public ResponseEntity<Iterable<ReadResponse>> list() {
         Iterable<User> users = userRepository.findByType(UserType.HUMAN);
@@ -45,10 +44,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/v1/user/{username}")
+    @GetMapping(path = "/user/{username}", version = "v1")
     @PreAuthorize("hasAuthority('user:read')")
-    public ResponseEntity<ReadResponse> read(ReadRequest request) {
-        User user = userRepository.findByUsername(request.username());
+    public ResponseEntity<ReadResponse> read(@PathVariable String username) {
+        User user = userRepository.findByUsername(username);
 
         if (user == null) {
             return ResponseEntity.notFound().build();

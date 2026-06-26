@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping(path = "/", version = "v1")
     @PreAuthorize("hasAuthority('package:read')")
     public String home() {
         return "Welcome to BeanStash API!";

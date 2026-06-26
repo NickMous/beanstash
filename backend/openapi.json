@@ -9,7 +9,7 @@
     "description" : "Generated server url"
   } ],
   "paths" : {
-    "/auth/register" : {
+    "/api/v1/auth/register" : {
       "post" : {
         "tags" : [ "auth-controller" ],
         "operationId" : "register",
@@ -37,7 +37,7 @@
         }
       }
     },
-    "/auth/register/verify-totp" : {
+    "/api/v1/auth/register/verify-totp" : {
       "post" : {
         "tags" : [ "auth-controller" ],
         "operationId" : "verifyTotp",
@@ -58,7 +58,7 @@
         }
       }
     },
-    "/auth/register/passkey" : {
+    "/api/v1/auth/register/passkey" : {
       "post" : {
         "tags" : [ "auth-controller" ],
         "operationId" : "completePasskeyRegistration",
@@ -79,7 +79,7 @@
         }
       }
     },
-    "/auth/register/passkey/options" : {
+    "/api/v1/auth/register/passkey/options" : {
       "post" : {
         "tags" : [ "auth-controller" ],
         "operationId" : "passkeyRegistrationOptions",
@@ -107,7 +107,7 @@
         }
       }
     },
-    "/auth/login" : {
+    "/api/v1/auth/login" : {
       "post" : {
         "tags" : [ "auth-controller" ],
         "operationId" : "login",
@@ -151,11 +151,11 @@
         "tags" : [ "user-controller" ],
         "operationId" : "read",
         "parameters" : [ {
-          "name" : "request",
-          "in" : "query",
+          "name" : "username",
+          "in" : "path",
           "required" : true,
           "schema" : {
-            "$ref" : "#/components/schemas/ReadRequest"
+            "type" : "string"
           }
         } ],
         "responses" : {
@@ -172,7 +172,7 @@
         }
       }
     },
-    "/" : {
+    "/api/v1" : {
       "get" : {
         "tags" : [ "home-controller" ],
         "operationId" : "home",
@@ -250,10 +250,10 @@
       "AuthenticationExtensionsClientOutputObject" : {
         "type" : "object",
         "properties" : {
-          "output" : { },
           "extensionId" : {
             "type" : "string"
-          }
+          },
+          "output" : { }
         }
       },
       "AuthenticationExtensionsClientOutputs" : {
@@ -549,16 +549,6 @@
           }
         },
         "required" : [ "password", "username" ]
-      },
-      "ReadRequest" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string",
-            "minLength" : 1
-          }
-        },
-        "required" : [ "username" ]
       },
       "ReadResponse" : {
         "type" : "object",

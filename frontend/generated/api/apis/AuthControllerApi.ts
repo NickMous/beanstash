@@ -206,7 +206,7 @@ export class AuthControllerApi extends runtime.BaseAPI implements AuthController
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/auth/register/passkey`;
+        let urlPath = `/api/v1/auth/register/passkey`;
 
         return {
             path: urlPath,
@@ -250,7 +250,7 @@ export class AuthControllerApi extends runtime.BaseAPI implements AuthController
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/auth/login`;
+        let urlPath = `/api/v1/auth/login`;
 
         return {
             path: urlPath,
@@ -294,7 +294,7 @@ export class AuthControllerApi extends runtime.BaseAPI implements AuthController
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/auth/register/passkey/options`;
+        let urlPath = `/api/v1/auth/register/passkey/options`;
 
         return {
             path: urlPath,
@@ -339,7 +339,7 @@ export class AuthControllerApi extends runtime.BaseAPI implements AuthController
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/auth/register`;
+        let urlPath = `/api/v1/auth/register`;
 
         return {
             path: urlPath,
@@ -384,7 +384,7 @@ export class AuthControllerApi extends runtime.BaseAPI implements AuthController
         headerParameters['Content-Type'] = 'application/json';
 
 
-        let urlPath = `/auth/register/verify-totp`;
+        let urlPath = `/api/v1/auth/register/verify-totp`;
 
         return {
             path: urlPath,

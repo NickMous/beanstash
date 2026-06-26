@@ -1,6 +1,7 @@
 .openapi-generator-ignore
 apis/AuthControllerApi.ts
 apis/HomeControllerApi.ts
+apis/UserControllerApi.ts
 apis/index.ts
 index.ts
 models/AttestationConveyancePreference.ts
@@ -23,6 +24,7 @@ models/PublicKeyCredentialParameters.ts
 models/PublicKeyCredentialRpEntity.ts
 models/PublicKeyCredentialType.ts
 models/PublicKeyCredentialUserEntity.ts
+models/ReadResponse.ts
 models/RegisterRequest.ts
 models/RelyingPartyPublicKey.ts
 models/ResidentKeyRequirement.ts

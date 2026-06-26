@@ -45,7 +45,7 @@ public class AuthorizationTests {
 
     @Test
     void testUnauthorizedRequest_returns401() throws Exception {
-        mockMvc.perform(get("/"))
+        mockMvc.perform(get("/api/v1/"))
                 .andExpect(status().isUnauthorized());
     }
 }

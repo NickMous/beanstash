@@ -20,6 +20,7 @@ export * from './PublicKeyCredentialParameters';
 export * from './PublicKeyCredentialRpEntity';
 export * from './PublicKeyCredentialType';
 export * from './PublicKeyCredentialUserEntity';
+export * from './ReadResponse';
 export * from './RegisterRequest';
 export * from './RelyingPartyPublicKey';
 export * from './ResidentKeyRequirement';
