@@ -17,3 +17,7 @@ data:
   OTEL_LOGS_EXPORTER: "none"
   APP_URL: https://beanstash.org
   APP_RP_ID: beanstash.org
+  # Parent domain for the XSRF-TOKEN cookie so the SPA (beanstash.org) can read a cookie
+  # set by the API (api.beanstash.org). beanstash.org is the only suffix both hosts share,
+  # so staging (staging.beanstash.org + staging.api.beanstash.org) inherits this value too.
+  APP_COOKIE_DOMAIN: beanstash.org

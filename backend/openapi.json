@@ -301,10 +301,10 @@
       "AuthenticationExtensionsClientOutputObject" : {
         "type" : "object",
         "properties" : {
-          "output" : { },
           "extensionId" : {
             "type" : "string"
-          }
+          },
+          "output" : { }
         }
       },
       "AuthenticationExtensionsClientOutputs" : {
