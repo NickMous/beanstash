@@ -3,6 +3,7 @@ package com.nickmous.beanstash.integration.controller;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -145,5 +146,28 @@ public class UserControllerTests {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.username").value("alice"))
             .andExpect(jsonPath("$.firstName").value("AliceUpdated"));
+    }
+
+    @Test
+    void deleteUser_whenNotAuthenticated_returns403() throws Exception {
+        mockMvc.perform(delete("/api/v1/user/alice")
+                .with(csrf()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteUser_whenAuthenticatedButWithoutAuthority_returns403() throws Exception {
+        mockMvc.perform(delete("/api/v1/user/alice")
+                .with(user("reader"))
+                .with(csrf()))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteUser_whenAuthenticatedWithWriteAuthority_returns200() throws Exception {
+        mockMvc.perform(delete("/api/v1/user/alice")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf()))
+            .andExpect(status().isNoContent());
     }
 }

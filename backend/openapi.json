@@ -67,6 +67,23 @@
             }
           }
         }
+      },
+      "delete" : {
+        "tags" : [ "user-controller" ],
+        "operationId" : "delete",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
       }
     },
     "/api/v1/auth/register" : {
@@ -316,10 +333,10 @@
       "AuthenticationExtensionsClientOutputObject" : {
         "type" : "object",
         "properties" : {
-          "output" : { },
           "extensionId" : {
             "type" : "string"
-          }
+          },
+          "output" : { }
         }
       },
       "AuthenticationExtensionsClientOutputs" : {

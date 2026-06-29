@@ -24,6 +24,10 @@ import {
     UpdateRequestToJSON,
 } from '../models/UpdateRequest';
 
+export interface DeleteRequest {
+    username: string;
+}
+
 export interface ReadRequest {
     username: string;
 }
@@ -40,6 +44,27 @@ export interface UpdateOperationRequest {
  * @interface UserControllerApiInterface
  */
 export interface UserControllerApiInterface {
+    /**
+     * Creates request options for _delete without sending the request
+     * @param {string} username 
+     * @throws {RequiredError}
+     * @memberof UserControllerApiInterface
+     */
+    _deleteRequestOpts(requestParameters: DeleteRequest): Promise<runtime.RequestOpts>;
+
+    /**
+     * 
+     * @param {string} username 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserControllerApiInterface
+     */
+    _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>>;
+
+    /**
+     */
+    _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
+
     /**
      * Creates request options for list without sending the request
      * @throws {RequiredError}
@@ -109,6 +134,48 @@ export interface UserControllerApiInterface {
  * 
  */
 export class UserControllerApi extends runtime.BaseAPI implements UserControllerApiInterface {
+
+    /**
+     * Creates request options for _delete without sending the request
+     */
+    async _deleteRequestOpts(requestParameters: DeleteRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['username'] == null) {
+            throw new runtime.RequiredError(
+                'username',
+                'Required parameter "username" was null or undefined when calling _delete().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/v1/user/{username}`;
+        urlPath = urlPath.replace('{username}', encodeURIComponent(String(requestParameters['username'])));
+
+        return {
+            path: urlPath,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     */
+    async _deleteRaw(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        const requestOptions = await this._deleteRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     */
+    async _delete(requestParameters: DeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this._deleteRaw(requestParameters, initOverrides);
+    }
 
     /**
      * Creates request options for list without sending the request
