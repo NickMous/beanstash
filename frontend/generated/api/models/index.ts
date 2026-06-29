@@ -25,5 +25,6 @@ export * from './RegisterRequest';
 export * from './RelyingPartyPublicKey';
 export * from './ResidentKeyRequirement';
 export * from './TotpSetupResponse';
+export * from './UpdateRequest';
 export * from './UserVerificationRequirement';
 export * from './VerifyTotpRequest';

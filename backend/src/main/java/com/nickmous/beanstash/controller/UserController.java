@@ -1,14 +1,18 @@
 package com.nickmous.beanstash.controller;
 
+import com.nickmous.beanstash.controller.dto.user.request.UpdateRequest;
 import com.nickmous.beanstash.controller.dto.user.response.ReadResponse;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.entity.UserType;
 import com.nickmous.beanstash.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -52,6 +56,39 @@ public class UserController {
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
+
+        ReadResponse response = new ReadResponse(
+            user.getUsername(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName()
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/user/{username}", version = "v1")
+    @PreAuthorize("hasAuthority('user:write') or #username == authentication.name")
+    public ResponseEntity<ReadResponse> update(@PathVariable String username, @Valid @RequestBody UpdateRequest request) {
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        if (request.email() != null) {
+            user.setEmail(request.email());
+        }
+
+        if (request.firstName() != null) {
+            user.setFirstName(request.firstName());
+        }
+
+        if (request.lastName() != null) {
+            user.setLastName(request.lastName());
+        }
+
+        userRepository.save(user);
 
         ReadResponse response = new ReadResponse(
             user.getUsername(),

@@ -29,6 +29,7 @@ models/RegisterRequest.ts
 models/RelyingPartyPublicKey.ts
 models/ResidentKeyRequirement.ts
 models/TotpSetupResponse.ts
+models/UpdateRequest.ts
 models/UserVerificationRequirement.ts
 models/VerifyTotpRequest.ts
 models/index.ts

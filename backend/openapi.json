@@ -9,6 +9,66 @@
     "description" : "Generated server url"
   } ],
   "paths" : {
+    "/api/v1/user/{username}" : {
+      "get" : {
+        "tags" : [ "user-controller" ],
+        "operationId" : "read",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReadResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "user-controller" ],
+        "operationId" : "update",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/auth/register" : {
       "post" : {
         "tags" : [ "auth-controller" ],
@@ -146,32 +206,6 @@
         }
       }
     },
-    "/api/v1/user/{username}" : {
-      "get" : {
-        "tags" : [ "user-controller" ],
-        "operationId" : "read",
-        "parameters" : [ {
-          "name" : "username",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ReadResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1" : {
       "get" : {
         "tags" : [ "home-controller" ],
@@ -193,6 +227,38 @@
   },
   "components" : {
     "schemas" : {
+      "UpdateRequest" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "format" : "email"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ReadResponse" : {
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          }
+        }
+      },
       "RegisterRequest" : {
         "type" : "object",
         "properties" : {
@@ -250,10 +316,10 @@
       "AuthenticationExtensionsClientOutputObject" : {
         "type" : "object",
         "properties" : {
+          "output" : { },
           "extensionId" : {
             "type" : "string"
-          },
-          "output" : { }
+          }
         }
       },
       "AuthenticationExtensionsClientOutputs" : {
@@ -549,23 +615,6 @@
           }
         },
         "required" : [ "password", "username" ]
-      },
-      "ReadResponse" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string"
-          },
-          "email" : {
-            "type" : "string"
-          },
-          "firstName" : {
-            "type" : "string"
-          },
-          "lastName" : {
-            "type" : "string"
-          }
-        }
       }
     }
   }

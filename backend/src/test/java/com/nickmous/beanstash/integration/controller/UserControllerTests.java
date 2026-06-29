@@ -1,7 +1,10 @@
 package com.nickmous.beanstash.integration.controller;
 
 import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -92,5 +96,54 @@ public class UserControllerTests {
             .andExpect(jsonPath("$[?(@.username == 'bob')].email").value(hasItem("bob@example.com")))
             .andExpect(jsonPath("$[?(@.username == 'sander')]").doesNotExist()) // Soft-deleted user is not returned.
             .andExpect(jsonPath("$[?(@.username == 'system')]").doesNotExist()); // System sentinel is not returned.
+    }
+
+    @Test
+    void updateUser_whenNotAuthenticated_returns403() throws Exception {
+        // Anonymous request: it carries user:read (granted by SecurityConfig.anonymous) so it clears the
+        // request matcher, but @PreAuthorize requires user:write -> 403. csrf() is required because CSRF is
+        // enabled; without it the POST is rejected at the CSRF filter (also 403) before authorization runs.
+        mockMvc.perform(post("/api/v1/user/alice")
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"firstName\": \"AliceUpdated\"}"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void updateUser_whenAuthenticatedButWithoutAuthority_returns403() throws Exception {
+        // Authenticated principal that gets user:read (via IpAuthorityFilter) but not user:write.
+        mockMvc.perform(post("/api/v1/user/alice")
+                .with(user("reader"))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"firstName\": \"AliceUpdated\"}"))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void updateUser_whenAuthenticatedButWithoutAuthorityButOwnsUser_returns200() throws Exception {
+        // Authenticated principal that gets user:read (via IpAuthorityFilter) but not user:write, but is
+        // updating their own user record. This is allowed by the @PreAuthorize expression.
+        mockMvc.perform(post("/api/v1/user/alice")
+                .with(user("alice"))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"email\": \"alice@example.com\", \"firstName\": \"AliceUpdated\", \"lastName\": \"Example\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("alice"))
+            .andExpect(jsonPath("$.firstName").value("AliceUpdated"));
+    }
+
+    @Test
+    void updateUser_whenAuthenticatedWithWriteAuthority_returns200() throws Exception {
+        mockMvc.perform(post("/api/v1/user/alice")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"email\": \"alice@example.com\", \"firstName\": \"AliceUpdated\", \"lastName\": \"Example\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("alice"))
+            .andExpect(jsonPath("$.firstName").value("AliceUpdated"));
     }
 }

@@ -21,16 +21,16 @@ import { mapValues } from '../runtime';
 export interface AuthenticationExtensionsClientOutputObject {
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticationExtensionsClientOutputObject
-     */
-    extensionId?: string;
-    /**
-     * 
      * @type {any}
      * @memberof AuthenticationExtensionsClientOutputObject
      */
     output?: any | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof AuthenticationExtensionsClientOutputObject
+     */
+    extensionId?: string;
 }
 
 /**
@@ -50,8 +50,8 @@ export function AuthenticationExtensionsClientOutputObjectFromJSONTyped(json: an
     }
     return {
         
-        'extensionId': json['extensionId'] == null ? undefined : json['extensionId'],
         'output': json['output'] == null ? undefined : json['output'],
+        'extensionId': json['extensionId'] == null ? undefined : json['extensionId'],
     };
 }
 
@@ -66,8 +66,8 @@ export function AuthenticationExtensionsClientOutputObjectToJSONTyped(value?: Au
 
     return {
         
-        'extensionId': value['extensionId'],
         'output': value['output'],
+        'extensionId': value['extensionId'],
     };
 }
 

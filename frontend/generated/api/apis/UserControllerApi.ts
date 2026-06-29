@@ -18,9 +18,19 @@ import {
     ReadResponseFromJSON,
     ReadResponseToJSON,
 } from '../models/ReadResponse';
+import {
+    type UpdateRequest,
+    UpdateRequestFromJSON,
+    UpdateRequestToJSON,
+} from '../models/UpdateRequest';
 
 export interface ReadRequest {
     username: string;
+}
+
+export interface UpdateOperationRequest {
+    username: string;
+    updateRequest: UpdateRequest;
 }
 
 /**
@@ -69,6 +79,29 @@ export interface UserControllerApiInterface {
     /**
      */
     read(requestParameters: ReadRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse>;
+
+    /**
+     * Creates request options for update without sending the request
+     * @param {string} username 
+     * @param {UpdateRequest} updateRequest 
+     * @throws {RequiredError}
+     * @memberof UserControllerApiInterface
+     */
+    updateRequestOpts(requestParameters: UpdateOperationRequest): Promise<runtime.RequestOpts>;
+
+    /**
+     * 
+     * @param {string} username 
+     * @param {UpdateRequest} updateRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserControllerApiInterface
+     */
+    updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ReadResponse>>;
+
+    /**
+     */
+    update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse>;
 
 }
 
@@ -152,6 +185,59 @@ export class UserControllerApi extends runtime.BaseAPI implements UserController
      */
     async read(requestParameters: ReadRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse> {
         const response = await this.readRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for update without sending the request
+     */
+    async updateRequestOpts(requestParameters: UpdateOperationRequest): Promise<runtime.RequestOpts> {
+        if (requestParameters['username'] == null) {
+            throw new runtime.RequiredError(
+                'username',
+                'Required parameter "username" was null or undefined when calling update().'
+            );
+        }
+
+        if (requestParameters['updateRequest'] == null) {
+            throw new runtime.RequiredError(
+                'updateRequest',
+                'Required parameter "updateRequest" was null or undefined when calling update().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/api/v1/user/{username}`;
+        urlPath = urlPath.replace('{username}', encodeURIComponent(String(requestParameters['username'])));
+
+        return {
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateRequestToJSON(requestParameters['updateRequest']),
+        };
+    }
+
+    /**
+     */
+    async updateRaw(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ReadResponse>> {
+        const requestOptions = await this.updateRequestOpts(requestParameters);
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ReadResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse> {
+        const response = await this.updateRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
