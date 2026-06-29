@@ -149,6 +149,58 @@ public class UserControllerTests {
     }
 
     @Test
+    void updateUser_whenUpdatingOnlyEmail_doesNotChangeOtherFields() throws Exception {
+        mockMvc.perform(patch("/api/v1/user/alice")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"email\": \"alice2@example.com\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("alice"))
+            .andExpect(jsonPath("$.firstName").value("Alice"))
+            .andExpect(jsonPath("$.lastName").value("Example"))
+            .andExpect(jsonPath("$.email").value("alice2@example.com"));
+    }
+
+    @Test
+    void updateUser_whenUpdatingOnlyFirstName_doesNotChangeOtherFields() throws Exception {
+        mockMvc.perform(patch("/api/v1/user/alice")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"firstName\": \"AliceUpdated\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("alice"))
+            .andExpect(jsonPath("$.firstName").value("AliceUpdated"))
+            .andExpect(jsonPath("$.lastName").value("Example"))
+            .andExpect(jsonPath("$.email").value("alice@example.com"));
+    }
+
+    @Test
+    void updateUser_whenUpdatingOnlyLastName_doesNotChangeOtherFields() throws Exception {
+        mockMvc.perform(patch("/api/v1/user/alice")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"lastName\": \"ExampleUpdated\"}"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("alice"))
+            .andExpect(jsonPath("$.firstName").value("Alice"))
+            .andExpect(jsonPath("$.lastName").value("ExampleUpdated"))
+            .andExpect(jsonPath("$.email").value("alice@example.com"));
+    }
+
+    @Test
+    void updateUser_whenUpdatingNonExistingUser_returns404() throws Exception {
+        mockMvc.perform(patch("/api/v1/user/nonexistent")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"firstName\": \"NonExistent\"}"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
     void deleteUser_whenNotAuthenticated_returns403() throws Exception {
         mockMvc.perform(delete("/api/v1/user/alice")
                 .with(csrf()))
@@ -169,5 +221,13 @@ public class UserControllerTests {
                 .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
                 .with(csrf()))
             .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteUser_whenDeletingNonExistingUser_returns404() throws Exception {
+        mockMvc.perform(delete("/api/v1/user/nonexistent")
+                .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
+                .with(csrf()))
+            .andExpect(status().isNotFound());
     }
 }
