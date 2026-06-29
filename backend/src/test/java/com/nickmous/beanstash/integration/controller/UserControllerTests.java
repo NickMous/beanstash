@@ -5,7 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -104,7 +104,7 @@ public class UserControllerTests {
         // Anonymous request: it carries user:read (granted by SecurityConfig.anonymous) so it clears the
         // request matcher, but @PreAuthorize requires user:write -> 403. csrf() is required because CSRF is
         // enabled; without it the POST is rejected at the CSRF filter (also 403) before authorization runs.
-        mockMvc.perform(post("/api/v1/user/alice")
+        mockMvc.perform(patch("/api/v1/user/alice")
                 .with(csrf())
                 .contentType("application/json")
                 .content("{\"firstName\": \"AliceUpdated\"}"))
@@ -114,7 +114,7 @@ public class UserControllerTests {
     @Test
     void updateUser_whenAuthenticatedButWithoutAuthority_returns403() throws Exception {
         // Authenticated principal that gets user:read (via IpAuthorityFilter) but not user:write.
-        mockMvc.perform(post("/api/v1/user/alice")
+        mockMvc.perform(patch("/api/v1/user/alice")
                 .with(user("reader"))
                 .with(csrf())
                 .contentType("application/json")
@@ -126,7 +126,7 @@ public class UserControllerTests {
     void updateUser_whenAuthenticatedButWithoutAuthorityButOwnsUser_returns200() throws Exception {
         // Authenticated principal that gets user:read (via IpAuthorityFilter) but not user:write, but is
         // updating their own user record. This is allowed by the @PreAuthorize expression.
-        mockMvc.perform(post("/api/v1/user/alice")
+        mockMvc.perform(patch("/api/v1/user/alice")
                 .with(user("alice"))
                 .with(csrf())
                 .contentType("application/json")
@@ -138,7 +138,7 @@ public class UserControllerTests {
 
     @Test
     void updateUser_whenAuthenticatedWithWriteAuthority_returns200() throws Exception {
-        mockMvc.perform(post("/api/v1/user/alice")
+        mockMvc.perform(patch("/api/v1/user/alice")
                 .with(user("editor").authorities(new SimpleGrantedAuthority("user:write")))
                 .with(csrf())
                 .contentType("application/json")

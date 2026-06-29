@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,7 +68,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(path = "/user/{username}", version = "v1")
+    @PatchMapping(path = "/user/{username}", version = "v1")
     @PreAuthorize("hasAuthority('user:write') or #username == authentication.name")
     public ResponseEntity<ReadResponse> update(@PathVariable String username, @Valid @RequestBody UpdateRequest request) {
         User user = userRepository.findByUsername(username);

@@ -285,7 +285,7 @@ export class UserControllerApi extends runtime.BaseAPI implements UserController
 
         return {
             path: urlPath,
-            method: 'POST',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
             body: UpdateRequestToJSON(requestParameters['updateRequest']),
