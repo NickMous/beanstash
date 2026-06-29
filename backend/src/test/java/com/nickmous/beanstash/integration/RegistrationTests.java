@@ -8,8 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nickmous.beanstash.configuration.TestcontainersConfig;
-import com.nickmous.beanstash.controller.dto.RegisterRequest;
-import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
+import com.nickmous.beanstash.controller.dto.auth.RegisterRequest;
+import com.nickmous.beanstash.controller.dto.auth.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.totp.Totp;
 import com.nickmous.beanstash.entity.Authority;
 import com.nickmous.beanstash.entity.Role;
@@ -45,7 +45,7 @@ public class RegistrationTests {
     void register_withValidData_returnsTotpSetup() throws Exception {
         var request = new RegisterRequest("newuser", "new@example.com", "securepassword1", "New", "User");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -58,13 +58,13 @@ public class RegistrationTests {
     void register_withDuplicateUsername_returns409() throws Exception {
         var request = new RegisterRequest("dupuser", "dup@example.com", "securepassword1", "Dup", "User");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk());
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -77,7 +77,7 @@ public class RegistrationTests {
             {"username": "", "email": "bad"}
             """;
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body))
@@ -88,7 +88,7 @@ public class RegistrationTests {
     void register_withShortPassword_returns400() throws Exception {
         var request = new RegisterRequest("shortpw", "short@example.com", "short", "Short", "Pw");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -99,7 +99,7 @@ public class RegistrationTests {
     void verifyTotp_withValidCode_returns200() throws Exception {
         var registerRequest = new RegisterRequest("verifyuser", "verify@example.com", "securepassword1", "Verify", "User");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
@@ -110,7 +110,7 @@ public class RegistrationTests {
 
         var verifyRequest = new VerifyTotpRequest("verifyuser", validCode);
 
-        mockMvc.perform(post("/auth/register/verify-totp")
+        mockMvc.perform(post("/api/v1/auth/register/verify-totp")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verifyRequest)))
@@ -124,7 +124,7 @@ public class RegistrationTests {
     void register_withValidData_assignsDefaultRole() throws Exception {
         var request = new RegisterRequest("authdefaultuser", "authdefault@example.com", "securepassword1", "Auth", "Default");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
@@ -143,7 +143,7 @@ public class RegistrationTests {
     void verifyTotp_withInvalidCode_returns400() throws Exception {
         var registerRequest = new RegisterRequest("badcodeuser", "badcode@example.com", "securepassword1", "Bad", "Code");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
@@ -151,7 +151,7 @@ public class RegistrationTests {
 
         var verifyRequest = new VerifyTotpRequest("badcodeuser", "000000");
 
-        mockMvc.perform(post("/auth/register/verify-totp")
+        mockMvc.perform(post("/api/v1/auth/register/verify-totp")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verifyRequest)))

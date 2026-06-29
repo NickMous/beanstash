@@ -8,9 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nickmous.beanstash.configuration.TestcontainersConfig;
-import com.nickmous.beanstash.controller.dto.LoginRequest;
-import com.nickmous.beanstash.controller.dto.RegisterRequest;
-import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
+import com.nickmous.beanstash.controller.dto.auth.LoginRequest;
+import com.nickmous.beanstash.controller.dto.auth.RegisterRequest;
+import com.nickmous.beanstash.controller.dto.auth.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.totp.Totp;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
@@ -49,7 +49,7 @@ public class RoleIntegrationTests {
     void registeredUser_getsDefaultRoleWithoutDirectAuthorities() throws Exception {
         var registerRequest = new RegisterRequest("roleuser", "roleuser@example.com", "securepassword1", "Role", "User");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
@@ -66,7 +66,7 @@ public class RoleIntegrationTests {
     void roleDerivedAuthority_grantsAccessToSecuredEndpoint() throws Exception {
         var registerRequest = new RegisterRequest("roleaccess", "roleaccess@example.com", "securepassword1", "Role", "Access");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
@@ -75,7 +75,7 @@ public class RoleIntegrationTests {
         User user = userRepository.findByUsername("roleaccess");
         String code = Totp.generateCode(user.getTotpSecret(), Instant.now());
 
-        mockMvc.perform(post("/auth/register/verify-totp")
+        mockMvc.perform(post("/api/v1/auth/register/verify-totp")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new VerifyTotpRequest("roleaccess", code))))
@@ -84,7 +84,7 @@ public class RoleIntegrationTests {
         user = userRepository.findByUsername("roleaccess");
         String loginCode = Totp.generateCode(user.getTotpSecret(), Instant.now());
 
-        MvcResult loginResult = mockMvc.perform(post("/auth/login")
+        MvcResult loginResult = mockMvc.perform(post("/api/v1/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new LoginRequest("roleaccess", "securepassword1", loginCode))))
@@ -99,7 +99,7 @@ public class RoleIntegrationTests {
             .extracting(GrantedAuthority::getAuthority)
             .contains("package:read");
 
-        mockMvc.perform(get("/").session(session))
+        mockMvc.perform(get("/api/v1/").session(session))
             .andExpect(status().isOk());
     }
 }

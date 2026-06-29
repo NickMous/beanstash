@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nickmous.beanstash.configuration.TestcontainersConfig;
-import com.nickmous.beanstash.controller.dto.LoginRequest;
-import com.nickmous.beanstash.controller.dto.RegisterRequest;
-import com.nickmous.beanstash.controller.dto.VerifyTotpRequest;
+import com.nickmous.beanstash.controller.dto.auth.LoginRequest;
+import com.nickmous.beanstash.controller.dto.auth.RegisterRequest;
+import com.nickmous.beanstash.controller.dto.auth.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.totp.Totp;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
@@ -50,7 +50,7 @@ public class TotpAuthenticationTests {
         }
 
         var registerRequest = new RegisterRequest(USERNAME, "login@example.com", PASSWORD, "Login", "User");
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/v1/auth/register")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
@@ -60,7 +60,7 @@ public class TotpAuthenticationTests {
         String validCode = Totp.generateCode(user.getTotpSecret(), Instant.now());
 
         var verifyRequest = new VerifyTotpRequest(USERNAME, validCode);
-        mockMvc.perform(post("/auth/register/verify-totp")
+        mockMvc.perform(post("/api/v1/auth/register/verify-totp")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(verifyRequest)))
@@ -74,7 +74,7 @@ public class TotpAuthenticationTests {
 
         var loginRequest = new LoginRequest(USERNAME, PASSWORD, totpCode);
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
@@ -85,7 +85,7 @@ public class TotpAuthenticationTests {
     void login_withValidPasswordButMissingTotp_returns401() throws Exception {
         var loginRequest = new LoginRequest(USERNAME, PASSWORD, null);
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
@@ -96,7 +96,7 @@ public class TotpAuthenticationTests {
     void login_withValidPasswordButWrongTotp_returns401() throws Exception {
         var loginRequest = new LoginRequest(USERNAME, PASSWORD, "000000");
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
@@ -110,7 +110,7 @@ public class TotpAuthenticationTests {
 
         var loginRequest = new LoginRequest(USERNAME, "wrongpassword1", totpCode);
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/v1/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
