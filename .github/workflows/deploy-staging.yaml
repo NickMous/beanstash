@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -135,7 +135,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout source repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.branch || github.ref }}
           path: source
@@ -154,7 +154,7 @@ jobs:
           echo "Branch: $BRANCH_NAME -> Slug: $BRANCH_SLUG"
 
       - name: Checkout fleet-infra repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: NickMous/fleet-infra
           token: ${{ secrets.FLEET_REPO_TOKEN }}
