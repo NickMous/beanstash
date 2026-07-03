@@ -13,7 +13,7 @@ spring:
 app:
   # Front-end origin. Used as the CORS allowed origin and the WebAuthn allowed origin.
   # In production set this to the SPA origin, e.g. https://beanstash.org (not the API host).
-  url: http://localhost:8080
+  url: http://localhost:3000
   rp-id: localhost
   # Parent domain for the XSRF-TOKEN cookie so the SPA can read it across subdomains,
   # e.g. beanstash.org when the API runs on api.beanstash.org. Empty = host-only (local dev).

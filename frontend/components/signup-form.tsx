@@ -2,10 +2,15 @@
 
 import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
-import {Field, FieldDescription, FieldGroup, FieldLabel} from "@/components/ui/field"
+import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import {useState} from "react";
 import {useTranslations} from "@/lang/utils";
+import {authApi} from "@/app/apiClient";
+import {
+    startRegistration,
+    type PublicKeyCredentialCreationOptionsJSON,
+} from "@simplewebauthn/browser";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
@@ -27,6 +32,9 @@ export function SignupForm({
     const [password, setPassword] = useState("");
 
     const [signupMethod, setSignupMethod] = useState<SignupMethod>(SignupMethod.Unspecified);
+    const [signupButtonsDisabled, setSignupButtonsDisabled] = useState(false);
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const t = useTranslations("en", "auth");
 
@@ -40,6 +48,54 @@ export function SignupForm({
 
     async function handlePasskeySignup() {
         setSignupMethod(SignupMethod.Passkey);
+        setSignupButtonsDisabled(true);
+        setErrorMessage(null);
+
+        try {
+            // 1. Fetch creation options. The OpenAPI spec maps Spring's WebAuthn value types
+            // (Bytes, the enum-like tokens, COSE alg) to their real scalar wire form, so the
+            // generated model is a faithful options JSON — no raw response reading needed.
+            const options = await authApi.passkeyRegistrationOptions({
+                passkeyRegistrationOptionsRequest: {username, email, firstName, lastName},
+            });
+
+            // 2. Run the WebAuthn ceremony. The generated options object has the same runtime
+            // shape SimpleWebAuthn wants; the cast only bridges the two libraries' nominal types.
+            const attResp = await startRegistration({
+                optionsJSON: options as unknown as PublicKeyCredentialCreationOptionsJSON,
+            });
+
+            // 3. Complete registration. Bound server-side to Spring's RelyingPartyPublicKey
+            // ({ credential, label }); the options are reloaded from the HTTP session and, on
+            // success, the controller opens the session (cookie stored via credentials: "include").
+            // clientExtensionResults is omitted — optional and empty for a basic registration.
+            await authApi.completePasskeyRegistration({
+                relyingPartyPublicKey: {
+                    credential: {
+                        id: attResp.id,
+                        type: attResp.type,
+                        rawId: attResp.rawId,
+                        response: {
+                            clientDataJSON: attResp.response.clientDataJSON,
+                            attestationObject: attResp.response.attestationObject,
+                            transports: attResp.response.transports ?? [],
+                        },
+                        authenticatorAttachment: attResp.authenticatorAttachment,
+                    },
+                    label: `${username}'s passkey`,
+                },
+            });
+
+            // Registered and authenticated (session cookie set).
+        } catch (error) {
+            if (error instanceof Error && error.name === "InvalidStateError") {
+                setErrorMessage(t('passkey.already-registered'));
+            } else {
+                setErrorMessage(t('passkey.registration-failed'));
+            }
+            console.error("Passkey registration failed", error);
+            setSignupButtonsDisabled(false);
+        }
     }
 
     function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -132,7 +188,7 @@ export function SignupForm({
                         <Button
                             variant="default"
                             type="button"
-                            disabled={!commonFilled}
+                            disabled={!commonFilled || signupButtonsDisabled}
                             onClick={handlePasskeySignup}
                         >
                             {t('use-passkey')}
@@ -140,12 +196,20 @@ export function SignupForm({
                         <Button
                             variant="outline"
                             type="button"
-                            disabled={!commonFilled}
+                            disabled={!commonFilled || signupButtonsDisabled}
                             onClick={handleTotpSignup}
                         >
                             {t('use-totp')}
                         </Button>
                     </Field>
+                    {errorMessage && (
+                        <FieldDescription className="text-center text-destructive">
+                            {errorMessage}
+                        </FieldDescription>
+                    )}
+                    {signupMethod !== SignupMethod.Unspecified && (
+                        <FieldSeparator />
+                    )}
                 </FieldGroup>
             </form>
             {/*<FieldDescription className="px-6 text-center">*/}

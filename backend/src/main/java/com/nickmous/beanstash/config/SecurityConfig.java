@@ -1,5 +1,8 @@
 package com.nickmous.beanstash.config;
 
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import tools.jackson.databind.JacksonModule;
 import java.util.List;
 import java.util.Set;
@@ -49,18 +52,10 @@ public class SecurityConfig {
     private String cookieDomain;
 
     @Bean
-    public SecurityFilterChain filterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
-            .csrf(csrf -> csrf
-                // Double-submit cookie: token in a JS-readable XSRF-TOKEN cookie, echoed
-                // back in the X-XSRF-TOKEN header. Plain (non-XOR) handler so the SPA can
-                // send the cookie value verbatim; BREACH masking is irrelevant for a JSON
-                // API that never reflects the token in a server-rendered response body.
-                .csrfTokenRepository(csrfTokenRepository())
-                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-            // Renders the XSRF-TOKEN cookie on safe requests so the SPA can bootstrap a token.
-            .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
+            .csrf(CsrfConfigurer::spa)
             .authorizeHttpRequests((authorize)
                 -> authorize
                 .requestMatchers("/api/*/auth/**")
@@ -69,16 +64,12 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers("/api/*/")
-                .authenticated()
                 .requestMatchers("/api/*/users/**")
                 .permitAll()
                 // Public read: gated by the authority (granted to everyone by default), not by
                 // authenticated(), so anonymous requests carrying user:read are allowed through.
                 .requestMatchers("/api/*/user/**")
                 .hasAuthority("user:read")
-                .requestMatchers("/api/**")
-                .authenticated()
                 .anyRequest()
                 .authenticated()
             )
@@ -117,17 +108,6 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
-    }
-
-    private CsrfTokenRepository csrfTokenRepository() {
-        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-        repository.setCookieCustomizer(cookie -> {
-            cookie.sameSite("Lax");
-            if (StringUtils.hasText(cookieDomain)) {
-                cookie.domain(cookieDomain);
-            }
-        });
-        return repository;
     }
 
     @Bean

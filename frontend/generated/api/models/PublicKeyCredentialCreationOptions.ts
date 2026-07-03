@@ -13,20 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { AttestationConveyancePreference } from './AttestationConveyancePreference';
-import {
-    AttestationConveyancePreferenceFromJSON,
-    AttestationConveyancePreferenceFromJSONTyped,
-    AttestationConveyancePreferenceToJSON,
-    AttestationConveyancePreferenceToJSONTyped,
-} from './AttestationConveyancePreference';
-import type { Bytes } from './Bytes';
-import {
-    BytesFromJSON,
-    BytesFromJSONTyped,
-    BytesToJSON,
-    BytesToJSONTyped,
-} from './Bytes';
 import type { PublicKeyCredentialDescriptor } from './PublicKeyCredentialDescriptor';
 import {
     PublicKeyCredentialDescriptorFromJSON,
@@ -90,10 +76,10 @@ export interface PublicKeyCredentialCreationOptions {
     user?: PublicKeyCredentialUserEntity;
     /**
      * 
-     * @type {Bytes}
+     * @type {string}
      * @memberof PublicKeyCredentialCreationOptions
      */
-    challenge?: Bytes;
+    challenge?: string;
     /**
      * 
      * @type {Array<PublicKeyCredentialParameters>}
@@ -120,10 +106,10 @@ export interface PublicKeyCredentialCreationOptions {
     authenticatorSelection?: AuthenticatorSelectionCriteria;
     /**
      * 
-     * @type {AttestationConveyancePreference}
+     * @type {string}
      * @memberof PublicKeyCredentialCreationOptions
      */
-    attestation?: AttestationConveyancePreference;
+    attestation?: string;
     /**
      * 
      * @type {AuthenticationExtensionsClientInputs}
@@ -151,12 +137,12 @@ export function PublicKeyCredentialCreationOptionsFromJSONTyped(json: any, ignor
         
         'rp': json['rp'] == null ? undefined : PublicKeyCredentialRpEntityFromJSON(json['rp']),
         'user': json['user'] == null ? undefined : PublicKeyCredentialUserEntityFromJSON(json['user']),
-        'challenge': json['challenge'] == null ? undefined : BytesFromJSON(json['challenge']),
+        'challenge': json['challenge'] == null ? undefined : json['challenge'],
         'pubKeyCredParams': json['pubKeyCredParams'] == null ? undefined : ((json['pubKeyCredParams'] as Array<any>).map(PublicKeyCredentialParametersFromJSON)),
         'timeout': json['timeout'] == null ? undefined : json['timeout'],
         'excludeCredentials': json['excludeCredentials'] == null ? undefined : ((json['excludeCredentials'] as Array<any>).map(PublicKeyCredentialDescriptorFromJSON)),
         'authenticatorSelection': json['authenticatorSelection'] == null ? undefined : AuthenticatorSelectionCriteriaFromJSON(json['authenticatorSelection']),
-        'attestation': json['attestation'] == null ? undefined : AttestationConveyancePreferenceFromJSON(json['attestation']),
+        'attestation': json['attestation'] == null ? undefined : json['attestation'],
         'extensions': json['extensions'] == null ? undefined : AuthenticationExtensionsClientInputsFromJSON(json['extensions']),
     };
 }
@@ -174,12 +160,12 @@ export function PublicKeyCredentialCreationOptionsToJSONTyped(value?: PublicKeyC
         
         'rp': PublicKeyCredentialRpEntityToJSON(value['rp']),
         'user': PublicKeyCredentialUserEntityToJSON(value['user']),
-        'challenge': BytesToJSON(value['challenge']),
+        'challenge': value['challenge'],
         'pubKeyCredParams': value['pubKeyCredParams'] == null ? undefined : ((value['pubKeyCredParams'] as Array<any>).map(PublicKeyCredentialParametersToJSON)),
         'timeout': value['timeout'],
         'excludeCredentials': value['excludeCredentials'] == null ? undefined : ((value['excludeCredentials'] as Array<any>).map(PublicKeyCredentialDescriptorToJSON)),
         'authenticatorSelection': AuthenticatorSelectionCriteriaToJSON(value['authenticatorSelection']),
-        'attestation': AttestationConveyancePreferenceToJSON(value['attestation']),
+        'attestation': value['attestation'],
         'extensions': AuthenticationExtensionsClientInputsToJSON(value['extensions']),
     };
 }

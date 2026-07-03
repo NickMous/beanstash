@@ -16,4 +16,8 @@ export default {
     "setup-passkey-title": "Set up a passkey",
     "setup-passkey-description": "Create a passkey to sign in to {email}.",
     "back-to-signup": "Back to sign up",
+    "passkey": {
+        "already-registered": "This passkey is already registered. Try a different passkey.",
+        "registration-failed": "Passkey registration failed. Please try again.",
+    }
 }

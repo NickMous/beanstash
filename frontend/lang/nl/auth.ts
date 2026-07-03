@@ -16,4 +16,8 @@ export default {
     "setup-passkey-title": "Passkey instellen",
     "setup-passkey-description": "Maak een passkey om in te loggen op {email}.",
     "back-to-signup": "Terug naar registreren",
+    "passkey": {
+        "already-registered": "Deze passkey is al geregistreerd. Probeer een andere passkey.",
+        "registration-failed": "Registratie van de passkey is mislukt. Probeer het opnieuw.",
+    }
 }

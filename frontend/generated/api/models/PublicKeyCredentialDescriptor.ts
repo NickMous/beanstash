@@ -13,28 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { Bytes } from './Bytes';
-import {
-    BytesFromJSON,
-    BytesFromJSONTyped,
-    BytesToJSON,
-    BytesToJSONTyped,
-} from './Bytes';
-import type { PublicKeyCredentialType } from './PublicKeyCredentialType';
-import {
-    PublicKeyCredentialTypeFromJSON,
-    PublicKeyCredentialTypeFromJSONTyped,
-    PublicKeyCredentialTypeToJSON,
-    PublicKeyCredentialTypeToJSONTyped,
-} from './PublicKeyCredentialType';
-import type { AuthenticatorTransport } from './AuthenticatorTransport';
-import {
-    AuthenticatorTransportFromJSON,
-    AuthenticatorTransportFromJSONTyped,
-    AuthenticatorTransportToJSON,
-    AuthenticatorTransportToJSONTyped,
-} from './AuthenticatorTransport';
-
 /**
  * 
  * @export
@@ -43,22 +21,22 @@ import {
 export interface PublicKeyCredentialDescriptor {
     /**
      * 
-     * @type {PublicKeyCredentialType}
+     * @type {string}
      * @memberof PublicKeyCredentialDescriptor
      */
-    type?: PublicKeyCredentialType;
+    type?: string;
     /**
      * 
-     * @type {Bytes}
+     * @type {string}
      * @memberof PublicKeyCredentialDescriptor
      */
-    id?: Bytes;
+    id?: string;
     /**
      * 
-     * @type {Set<AuthenticatorTransport>}
+     * @type {Set<string>}
      * @memberof PublicKeyCredentialDescriptor
      */
-    transports?: Set<AuthenticatorTransport>;
+    transports?: Set<string>;
 }
 
 /**
@@ -78,9 +56,9 @@ export function PublicKeyCredentialDescriptorFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
-        'type': json['type'] == null ? undefined : PublicKeyCredentialTypeFromJSON(json['type']),
-        'id': json['id'] == null ? undefined : BytesFromJSON(json['id']),
-        'transports': json['transports'] == null ? undefined : (new Set((json['transports'] as Array<any>).map(AuthenticatorTransportFromJSON))),
+        'type': json['type'] == null ? undefined : json['type'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'transports': json['transports'] == null ? undefined : new Set(json['transports']),
     };
 }
 
@@ -95,9 +73,9 @@ export function PublicKeyCredentialDescriptorToJSONTyped(value?: PublicKeyCreden
 
     return {
         
-        'type': PublicKeyCredentialTypeToJSON(value['type']),
-        'id': BytesToJSON(value['id']),
-        'transports': value['transports'] == null ? undefined : (Array.from(value['transports'] as Set<any>).map(AuthenticatorTransportToJSON)),
+        'type': value['type'],
+        'id': value['id'],
+        'transports': value['transports'] == null ? undefined : Array.from(value['transports'] as Set<any>),
     };
 }
 
