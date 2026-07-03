@@ -7,12 +7,14 @@ import com.nickmous.beanstash.controller.dto.auth.VerifyTotpRequest;
 import com.nickmous.beanstash.domain.security.CustomUserDetailsService;
 import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.domain.security.passkey.PasskeyRegistrationService;
+import com.nickmous.beanstash.domain.security.passkey.PendingPasskeyRegistration;
 import com.nickmous.beanstash.domain.security.totp.TotpService;
 import com.nickmous.beanstash.domain.security.totp.TotpSetupResponse;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @AllArgsConstructor
 public class AuthController {
+
+    // Session attribute holding the pending signup profile between the passkey options and
+    // completion requests. See PendingPasskeyRegistration.
+    private static final String PENDING_PASSKEY_REGISTRATION_ATTR =
+        "com.nickmous.beanstash.passkey.PENDING_REGISTRATION";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -111,11 +118,19 @@ public class AuthController {
             HttpServletRequest httpRequest,
             HttpServletResponse httpResponse) {
         try {
-            PublicKeyCredentialCreationOptions options = passkeyRegistrationService.requestRegistrationOptions(
-                request.username(), request.email(), request.firstName(), request.lastName());
+            PublicKeyCredentialCreationOptions options =
+                passkeyRegistrationService.requestRegistrationOptions(request.username());
 
             var optionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
             optionsRepository.save(httpRequest, httpResponse, options);
+
+            // Hold the profile in the session until the ceremony completes; the account is created
+            // only on success (POST /register/passkey), so an abandoned attempt leaves no orphaned
+            // user and the username can be retried.
+            httpRequest.getSession().setAttribute(
+                PENDING_PASSKEY_REGISTRATION_ATTR,
+                new PendingPasskeyRegistration(
+                    request.username(), request.email(), request.firstName(), request.lastName()));
 
             return ResponseEntity.ok(options);
         } catch (IllegalArgumentException e) {
@@ -130,15 +145,19 @@ public class AuthController {
         var optionsRepository = new HttpSessionPublicKeyCredentialCreationOptionsRepository();
         PublicKeyCredentialCreationOptions options = optionsRepository.load(httpRequest);
 
-        if (options == null) {
+        HttpSession session = httpRequest.getSession(false);
+        PendingPasskeyRegistration pending = session == null ? null
+            : (PendingPasskeyRegistration) session.getAttribute(PENDING_PASSKEY_REGISTRATION_ATTR);
+
+        if (options == null || pending == null) {
             return ResponseEntity.badRequest().build();
         }
 
         var registrationRequest = new ImmutableRelyingPartyRegistrationRequest(options, publicKey);
-        passkeyRegistrationService.completeRegistration(registrationRequest);
+        passkeyRegistrationService.completeRegistration(registrationRequest, pending);
+        session.removeAttribute(PENDING_PASSKEY_REGISTRATION_ATTR);
 
-        String username = options.getUser().getName();
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(pending.username());
 
         UsernamePasswordAuthenticationToken auth =
             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
