@@ -19,5 +19,6 @@ export default {
     "passkey": {
         "already-registered": "This passkey is already registered. Try a different passkey.",
         "registration-failed": "Passkey registration failed. Please try again.",
-    }
+    },
+    "registration-success": "Successfully registered!",
 }

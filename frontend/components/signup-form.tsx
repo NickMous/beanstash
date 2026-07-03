@@ -35,6 +35,7 @@ export function SignupForm({
     const [signupButtonsDisabled, setSignupButtonsDisabled] = useState(false);
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const t = useTranslations("en", "auth");
 
@@ -95,7 +96,10 @@ export function SignupForm({
             }
             console.error("Passkey registration failed", error);
             setSignupButtonsDisabled(false);
+            return;
         }
+
+        setSuccessMessage(t('registration-success'));
     }
 
     function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -207,7 +211,12 @@ export function SignupForm({
                             {errorMessage}
                         </FieldDescription>
                     )}
-                    {signupMethod !== SignupMethod.Unspecified && (
+                    {successMessage && (
+                        <FieldDescription className="text-center text-emerald-400">
+                            {successMessage}
+                        </FieldDescription>
+                    )}
+                    {signupMethod === SignupMethod.Totp && (
                         <FieldSeparator />
                     )}
                 </FieldGroup>
