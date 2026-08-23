@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useTranslations} from "@/lang/utils";
 import {authApi} from "@/app/apiClient";
 import {
@@ -16,6 +16,10 @@ import {useQRCode} from "next-qrcode";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
+
+const LOCALSTORAGE_USERNAME_KEY = "rmb_username";
+const LOCALSTORAGE_EMAIL_ADDRESS_KEY = "rmb_email";
+const LOCALSTORAGE_TOTP_AUTH_URI_KEY = "rmb_totp_auth_uri";
 
 enum SignupMethod {
     Unspecified = "unspecified",
@@ -47,6 +51,39 @@ export function SignupForm({
     const t = useTranslations("en", "auth");
 
     const commonFilled = Boolean(username && email && firstName && lastName);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const storedUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
+        const storedEmail = localStorage.getItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY);
+        const storedTotpAuthUri = localStorage.getItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY);
+
+        if (storedUsername !== null && storedTotpAuthUri !== null) {
+            setUsername(storedUsername);
+            setTotpAuthUri(storedTotpAuthUri);
+
+            if (storedEmail !== null) {
+                setEmail(storedEmail);
+            }
+
+            const registerForm = document.getElementById("registerForm");
+            const totpForm = document.getElementById("totpForm");
+
+            if (registerForm === null || totpForm === null) {
+                throw new Error("registerForm or totpForm not found");
+            }
+
+            registerForm.classList.toggle("opacity-0");
+            registerForm.classList.toggle("opacity-100");
+            registerForm.classList.toggle("hidden");
+            totpForm.classList.toggle("hidden");
+            totpForm.classList.toggle("opacity-100");
+            totpForm.classList.toggle("opacity-0");
+        }
+    }, [])
 
     async function handleTotpSignup() {
         setSignupMethod(SignupMethod.Totp);
@@ -112,7 +149,14 @@ export function SignupForm({
                 password: password,
             }
         }).then(r => {
-            setTotpAuthUri(r.otpAuthUri ?? '');
+            if (r.otpAuthUri === undefined) {
+                throw new Error("otpAuthUri is undefined");
+            }
+
+            setTotpAuthUri(r.otpAuthUri);
+            localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
+            localStorage.setItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY, email);
+            localStorage.setItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY, r.otpAuthUri);
         })
 
         const registerForm = document.getElementById("registerForm");
@@ -136,6 +180,7 @@ export function SignupForm({
     }
 
     function verifyTotp() {
+        // Don't forget to clear the localstorage
     }
 
     return (
@@ -260,7 +305,7 @@ export function SignupForm({
             {/*  By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}*/}
             {/*  and <a href="#">Privacy Policy</a>.*/}
             {/*</FieldDescription>*/}
-            <form className={cn("transition-opacity duration-300 opacity-0 hidden")} id="totpForm">
+            <form onSubmit={handleSubmit} className={cn("transition-opacity duration-300 opacity-0 hidden")} id="totpForm">
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
                         <h1 className="text-xl font-bold">{t('setup-totp-title')}</h1>
