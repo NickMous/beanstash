@@ -21,4 +21,8 @@ export default {
         "registration-failed": "Registratie van de passkey is mislukt. Probeer het opnieuw.",
     },
     "registration-success": "Succesvol geregistreerd!",
+    "very-secure-password": "superveilig-wachtwoord",
+    "retrieve-totp-code": "Haal TOTP code op",
+    "verify-the-totp-code": "Verifieer de TOTP code van jouw authenticatie-app",
+    "verify-totp": "TOTP Code verifiëren"
 }

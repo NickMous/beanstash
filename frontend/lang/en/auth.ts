@@ -21,4 +21,8 @@ export default {
         "registration-failed": "Passkey registration failed. Please try again.",
     },
     "registration-success": "Successfully registered!",
+    "very-secure-password": "very-secure-password",
+    "retrieve-totp-code": "Retrieve TOTP code",
+    "verify-the-totp-code": "Verify the TOTP code from your authenticator app",
+    "verify-totp": "Verify TOTP"
 }

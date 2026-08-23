@@ -11,6 +11,8 @@ import {
     startRegistration,
     type PublicKeyCredentialCreationOptionsJSON,
 } from "@simplewebauthn/browser";
+import {Skeleton} from "@/components/ui/skeleton";
+import {useQRCode} from "next-qrcode";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
@@ -25,6 +27,8 @@ export function SignupForm({
                                className,
                                ...props
                            }: React.ComponentProps<"div">) {
+    const { SVG } = useQRCode();
+
     const [username, setUsername] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -37,14 +41,16 @@ export function SignupForm({
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+    const [totpVerificationNumber, setTotpVerificationNumber] = useState("");
+    const [totpAuthUri, setTotpAuthUri] = useState<string | null>(null);
+
     const t = useTranslations("en", "auth");
 
-    // Fields required by both signup paths (username/email/name). Passkey signup is
-    // passwordless (/register/passkey/*); only the TOTP path (/register) needs a password.
     const commonFilled = Boolean(username && email && firstName && lastName);
 
     async function handleTotpSignup() {
         setSignupMethod(SignupMethod.Totp);
+        setErrorMessage(null);
     }
 
     async function handlePasskeySignup() {
@@ -53,23 +59,14 @@ export function SignupForm({
         setErrorMessage(null);
 
         try {
-            // 1. Fetch creation options. The OpenAPI spec maps Spring's WebAuthn value types
-            // (Bytes, the enum-like tokens, COSE alg) to their real scalar wire form, so the
-            // generated model is a faithful options JSON — no raw response reading needed.
             const options = await authApi.passkeyRegistrationOptions({
                 passkeyRegistrationOptionsRequest: {username, email, firstName, lastName},
             });
 
-            // 2. Run the WebAuthn ceremony. The generated options object has the same runtime
-            // shape SimpleWebAuthn wants; the cast only bridges the two libraries' nominal types.
             const attResp = await startRegistration({
                 optionsJSON: options as unknown as PublicKeyCredentialCreationOptionsJSON,
             });
 
-            // 3. Complete registration. Bound server-side to Spring's RelyingPartyPublicKey
-            // ({ credential, label }); the options are reloaded from the HTTP session and, on
-            // success, the controller opens the session (cookie stored via credentials: "include").
-            // clientExtensionResults is omitted — optional and empty for a basic registration.
             await authApi.completePasskeyRegistration({
                 relyingPartyPublicKey: {
                     credential: {
@@ -86,8 +83,6 @@ export function SignupForm({
                     label: `${username}'s passkey`,
                 },
             });
-
-            // Registered and authenticated (session cookie set).
         } catch (error) {
             if (error instanceof Error && error.name === "InvalidStateError") {
                 setErrorMessage(t('passkey.already-registered'));
@@ -107,20 +102,47 @@ export function SignupForm({
         event.preventDefault();
     }
 
+    function retrieveTotp() {
+        authApi.register({
+            registerRequest: {
+                username: username,
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                password: password,
+            }
+        }).then(r => {
+            setTotpAuthUri(r.otpAuthUri ?? '');
+        })
+
+        const registerForm = document.getElementById("registerForm");
+        const totpForm = document.getElementById("totpForm");
+
+        if (registerForm === null || totpForm === null) {
+            throw new Error("registerForm or totpForm not found");
+        }
+
+        registerForm.addEventListener("transitionend", () => {
+            registerForm.addEventListener("transitionend", () => {});
+
+            registerForm.classList.toggle("hidden");
+            totpForm.classList.toggle("hidden");
+            totpForm.classList.toggle("opacity-100");
+            totpForm.classList.toggle("opacity-0");
+        })
+
+        registerForm.classList.toggle("opacity-0");
+        registerForm.classList.toggle("opacity-100");
+    }
+
+    function verifyTotp() {
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={cn("transition-opacity duration-300 opacity-100")} id="registerForm">
                 <FieldGroup>
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <a
-                            href="#"
-                            className="flex flex-col items-center gap-2 font-medium"
-                        >
-                            {/*<div className="flex size-8 items-center justify-center rounded-md">*/}
-                            {/*  <GalleryVerticalEndIcon className="size-6" />*/}
-                            {/*</div>*/}
-                            <span className="sr-only">Beanstash</span>
-                        </a>
                         <h1 className="text-xl font-bold">{t('welcome-to')} Beanstash</h1>
                         <FieldDescription>
                             {t('already-have-account')} <a href="/signin">{t('sign-in')}</a>
@@ -173,18 +195,6 @@ export function SignupForm({
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </Field>
-                    {/*<Field>*/}
-                    {/*  <FieldLabel htmlFor="password">{t('password')}</FieldLabel>*/}
-                    {/*  <Input*/}
-                    {/*    id="password"*/}
-                    {/*    type="password"*/}
-                    {/*    autoComplete="new-password"*/}
-                    {/*    minLength={MIN_PASSWORD_LENGTH}*/}
-                    {/*    value={password}*/}
-                    {/*    onChange={(e) => setPassword(e.target.value)}*/}
-                    {/*  />*/}
-                    {/*  <FieldDescription>{t('password-hint')}</FieldDescription>*/}
-                    {/*</Field>*/}
                     <FieldDescription className="text-center">
                         {t('choose-method')}
                     </FieldDescription>
@@ -217,7 +227,32 @@ export function SignupForm({
                         </FieldDescription>
                     )}
                     {signupMethod === SignupMethod.Totp && (
-                        <FieldSeparator />
+                        <>
+                            <FieldSeparator />
+                            <Field>
+                                <FieldLabel htmlFor="password">{t('password')}</FieldLabel>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    placeholder={t('very-secure-password')}
+                                    autoComplete="password"
+                                    minLength={MIN_PASSWORD_LENGTH}
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </Field>
+                            <Field>
+                                <Button
+                                    variant="default"
+                                    type="button"
+                                    disabled={!password}
+                                    onClick={retrieveTotp}
+                                >
+                                    {t('retrieve-totp-code')}
+                                </Button>
+                            </Field>
+                        </>
                     )}
                 </FieldGroup>
             </form>
@@ -225,6 +260,48 @@ export function SignupForm({
             {/*  By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}*/}
             {/*  and <a href="#">Privacy Policy</a>.*/}
             {/*</FieldDescription>*/}
+            <form className={cn("transition-opacity duration-300 opacity-0 hidden")} id="totpForm">
+                <FieldGroup>
+                    <div className="flex flex-col items-center gap-2 text-center">
+                        <h1 className="text-xl font-bold">{t('setup-totp-title')}</h1>
+                        <FieldDescription>
+                            {t('setup-totp-description', {email: email})}
+                        </FieldDescription>
+                    </div>
+                    {totpAuthUri !== null ? (
+                        <SVG
+                            text={'https://github.com/bunlong/next-qrcode'}
+                            options={{
+                                margin: 2,
+                            }}
+                        />
+                    ) : (
+                        <Skeleton className="aspect-square" />
+                    )}
+                    <FieldSeparator />
+                    <Field>
+                        <FieldLabel htmlFor="totpVerification">{t('verify-the-totp-code')}</FieldLabel>
+                        <Input
+                            id="totpVerification"
+                            type="number"
+                            minLength={6}
+                            maxLength={6}
+                            value={totpVerificationNumber}
+                            onChange={(e) => setTotpVerificationNumber(e.target.value)}
+                        />
+                    </Field>
+                    <Field>
+                        <Button
+                            variant="default"
+                            type="submit"
+                            disabled={totpVerificationNumber.length !== 6}
+                            onClick={verifyTotp}
+                        >
+                            {t('verify-totp')}
+                        </Button>
+                    </Field>
+                </FieldGroup>
+            </form>
         </div>
     )
 }
