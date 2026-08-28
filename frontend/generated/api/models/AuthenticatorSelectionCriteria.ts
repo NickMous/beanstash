@@ -13,28 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { UserVerificationRequirement } from './UserVerificationRequirement';
-import {
-    UserVerificationRequirementFromJSON,
-    UserVerificationRequirementFromJSONTyped,
-    UserVerificationRequirementToJSON,
-    UserVerificationRequirementToJSONTyped,
-} from './UserVerificationRequirement';
-import type { AuthenticatorAttachment } from './AuthenticatorAttachment';
-import {
-    AuthenticatorAttachmentFromJSON,
-    AuthenticatorAttachmentFromJSONTyped,
-    AuthenticatorAttachmentToJSON,
-    AuthenticatorAttachmentToJSONTyped,
-} from './AuthenticatorAttachment';
-import type { ResidentKeyRequirement } from './ResidentKeyRequirement';
-import {
-    ResidentKeyRequirementFromJSON,
-    ResidentKeyRequirementFromJSONTyped,
-    ResidentKeyRequirementToJSON,
-    ResidentKeyRequirementToJSONTyped,
-} from './ResidentKeyRequirement';
-
 /**
  * 
  * @export
@@ -43,22 +21,22 @@ import {
 export interface AuthenticatorSelectionCriteria {
     /**
      * 
-     * @type {AuthenticatorAttachment}
+     * @type {string}
      * @memberof AuthenticatorSelectionCriteria
      */
-    authenticatorAttachment?: AuthenticatorAttachment;
+    authenticatorAttachment?: string;
     /**
      * 
-     * @type {ResidentKeyRequirement}
+     * @type {string}
      * @memberof AuthenticatorSelectionCriteria
      */
-    residentKey?: ResidentKeyRequirement;
+    residentKey?: string;
     /**
      * 
-     * @type {UserVerificationRequirement}
+     * @type {string}
      * @memberof AuthenticatorSelectionCriteria
      */
-    userVerification?: UserVerificationRequirement;
+    userVerification?: string;
 }
 
 /**
@@ -78,9 +56,9 @@ export function AuthenticatorSelectionCriteriaFromJSONTyped(json: any, ignoreDis
     }
     return {
         
-        'authenticatorAttachment': json['authenticatorAttachment'] == null ? undefined : AuthenticatorAttachmentFromJSON(json['authenticatorAttachment']),
-        'residentKey': json['residentKey'] == null ? undefined : ResidentKeyRequirementFromJSON(json['residentKey']),
-        'userVerification': json['userVerification'] == null ? undefined : UserVerificationRequirementFromJSON(json['userVerification']),
+        'authenticatorAttachment': json['authenticatorAttachment'] == null ? undefined : json['authenticatorAttachment'],
+        'residentKey': json['residentKey'] == null ? undefined : json['residentKey'],
+        'userVerification': json['userVerification'] == null ? undefined : json['userVerification'],
     };
 }
 
@@ -95,9 +73,9 @@ export function AuthenticatorSelectionCriteriaToJSONTyped(value?: AuthenticatorS
 
     return {
         
-        'authenticatorAttachment': AuthenticatorAttachmentToJSON(value['authenticatorAttachment']),
-        'residentKey': ResidentKeyRequirementToJSON(value['residentKey']),
-        'userVerification': UserVerificationRequirementToJSON(value['userVerification']),
+        'authenticatorAttachment': value['authenticatorAttachment'],
+        'residentKey': value['residentKey'],
+        'userVerification': value['userVerification'],
     };
 }
 

@@ -1,0 +1,33 @@
+export default {
+    "welcome-to": "Welcome to",
+    "already-have-account": "Already have an account?",
+    "sign-in": "Sign in",
+    "email": "Email",
+    "username": "Username",
+    "first-name": "First name",
+    "last-name": "Last name",
+    "password": "Password",
+    "password-hint": "Only needed to sign up with an authenticator app.",
+    "choose-method": "Choose how you'd like to secure your account.",
+    "use-totp": "Sign up with authenticator app",
+    "use-passkey": "Sign up with a passkey",
+    "setup-totp-title": "Set up authenticator app",
+    "setup-totp-description": "Add an authenticator app to secure {email}.",
+    "setup-passkey-title": "Set up a passkey",
+    "setup-passkey-description": "Create a passkey to sign in to {email}.",
+    "back-to-signup": "Back to sign up",
+    "passkey": {
+        "already-registered": "This passkey is already registered. Try a different passkey.",
+        "registration-failed": "Passkey registration failed. Please try again.",
+    },
+    "totp": {
+        "registration-failed": "Registration failed. Please try again.",
+    },
+    "registration-success": "Successfully registered!",
+    "very-secure-password": "very-secure-password",
+    "retrieve-totp-code": "Retrieve TOTP code",
+    "verify-the-totp-code": "Verify the TOTP code from your authenticator app",
+    "verify-totp": "Verify TOTP",
+    totp_verification_completed: "Verification completed, we're sending you to home...",
+    totp_verification_failed: "Verification failed, please enter the generated number in your 2fa app."
+}

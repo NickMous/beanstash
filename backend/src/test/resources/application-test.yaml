@@ -10,5 +10,5 @@ spring:
     username: app_user
     password: app_password
 app:
-  url: http://localhost:8080
+  url: http://localhost:3000
   rp-id: localhost

@@ -52,7 +52,7 @@ public class PasskeyRegistrationTests {
     }
 
     @Test
-    void passkeyRegistrationOptions_createsUserWithNullPassword() throws Exception {
+    void passkeyRegistrationOptions_doesNotCreateUserUntilCeremonyCompletes() throws Exception {
         var request = new PasskeyRegistrationOptionsRequest(
             "pknopassword", "pknp@example.com", "PK", "NoPw");
 
@@ -62,22 +62,42 @@ public class PasskeyRegistrationTests {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk());
 
-        User user = userRepository.findByUsername("pknopassword");
-        assertThat(user).isNotNull();
-        assertThat(user.getPassword()).isNull();
-        assertThat(user.getEmail()).isEqualTo("pknp@example.com");
+        // Requesting options is preparatory: the account is created only once the ceremony
+        // completes (POST /register/passkey), so nothing is persisted yet.
+        assertThat(userRepository.findByUsername("pknopassword")).isNull();
     }
 
     @Test
-    void passkeyRegistrationOptions_withDuplicateUsername_returns409() throws Exception {
+    void passkeyRegistrationOptions_canBeRetriedForSameUsernameAfterAbandonedAttempt() throws Exception {
         var request = new PasskeyRegistrationOptionsRequest(
-            "pkdupuser", "pkdup@example.com", "Dup", "User");
+            "pkretry", "pkretry@example.com", "PK", "Retry");
+        String body = objectMapper.writeValueAsString(request);
+
+        // A first (abandoned) options request must not block a second one for the same username.
+        mockMvc.perform(post("/api/v1/auth/register/passkey/options")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andExpect(status().isOk());
 
         mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(body))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    void passkeyRegistrationOptions_withExistingAccount_returns409() throws Exception {
+        User existing = new User();
+        existing.setUsername("pkdupuser");
+        existing.setEmail("pkdup@example.com");
+        existing.setFirstName("Dup");
+        existing.setLastName("User");
+        userRepository.save(existing);
+
+        var request = new PasskeyRegistrationOptionsRequest(
+            "pkdupuser", "pkdup@example.com", "Dup", "User");
 
         mockMvc.perform(post("/api/v1/auth/register/passkey/options")
                 .with(csrf())

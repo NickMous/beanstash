@@ -13,20 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { Bytes } from './Bytes';
-import {
-    BytesFromJSON,
-    BytesFromJSONTyped,
-    BytesToJSON,
-    BytesToJSONTyped,
-} from './Bytes';
-import type { AuthenticatorAttachment } from './AuthenticatorAttachment';
-import {
-    AuthenticatorAttachmentFromJSON,
-    AuthenticatorAttachmentFromJSONTyped,
-    AuthenticatorAttachmentToJSON,
-    AuthenticatorAttachmentToJSONTyped,
-} from './AuthenticatorAttachment';
 import type { AuthenticationExtensionsClientOutputs } from './AuthenticationExtensionsClientOutputs';
 import {
     AuthenticationExtensionsClientOutputsFromJSON,
@@ -34,13 +20,6 @@ import {
     AuthenticationExtensionsClientOutputsToJSON,
     AuthenticationExtensionsClientOutputsToJSONTyped,
 } from './AuthenticationExtensionsClientOutputs';
-import type { PublicKeyCredentialType } from './PublicKeyCredentialType';
-import {
-    PublicKeyCredentialTypeFromJSON,
-    PublicKeyCredentialTypeFromJSONTyped,
-    PublicKeyCredentialTypeToJSON,
-    PublicKeyCredentialTypeToJSONTyped,
-} from './PublicKeyCredentialType';
 import type { AuthenticatorAttestationResponse } from './AuthenticatorAttestationResponse';
 import {
     AuthenticatorAttestationResponseFromJSON,
@@ -63,16 +42,16 @@ export interface PublicKeyCredentialAuthenticatorAttestationResponse {
     id?: string;
     /**
      * 
-     * @type {PublicKeyCredentialType}
+     * @type {string}
      * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
      */
-    type?: PublicKeyCredentialType;
+    type?: string;
     /**
      * 
-     * @type {Bytes}
+     * @type {string}
      * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
      */
-    rawId?: Bytes;
+    rawId?: string;
     /**
      * 
      * @type {AuthenticatorAttestationResponse}
@@ -81,10 +60,10 @@ export interface PublicKeyCredentialAuthenticatorAttestationResponse {
     response?: AuthenticatorAttestationResponse;
     /**
      * 
-     * @type {AuthenticatorAttachment}
+     * @type {string}
      * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
      */
-    authenticatorAttachment?: AuthenticatorAttachment;
+    authenticatorAttachment?: string;
     /**
      * 
      * @type {AuthenticationExtensionsClientOutputs}
@@ -111,10 +90,10 @@ export function PublicKeyCredentialAuthenticatorAttestationResponseFromJSONTyped
     return {
         
         'id': json['id'] == null ? undefined : json['id'],
-        'type': json['type'] == null ? undefined : PublicKeyCredentialTypeFromJSON(json['type']),
-        'rawId': json['rawId'] == null ? undefined : BytesFromJSON(json['rawId']),
+        'type': json['type'] == null ? undefined : json['type'],
+        'rawId': json['rawId'] == null ? undefined : json['rawId'],
         'response': json['response'] == null ? undefined : AuthenticatorAttestationResponseFromJSON(json['response']),
-        'authenticatorAttachment': json['authenticatorAttachment'] == null ? undefined : AuthenticatorAttachmentFromJSON(json['authenticatorAttachment']),
+        'authenticatorAttachment': json['authenticatorAttachment'] == null ? undefined : json['authenticatorAttachment'],
         'clientExtensionResults': json['clientExtensionResults'] == null ? undefined : AuthenticationExtensionsClientOutputsFromJSON(json['clientExtensionResults']),
     };
 }
@@ -131,10 +110,10 @@ export function PublicKeyCredentialAuthenticatorAttestationResponseToJSONTyped(v
     return {
         
         'id': value['id'],
-        'type': PublicKeyCredentialTypeToJSON(value['type']),
-        'rawId': BytesToJSON(value['rawId']),
+        'type': value['type'],
+        'rawId': value['rawId'],
         'response': AuthenticatorAttestationResponseToJSON(value['response']),
-        'authenticatorAttachment': AuthenticatorAttachmentToJSON(value['authenticatorAttachment']),
+        'authenticatorAttachment': value['authenticatorAttachment'],
         'clientExtensionResults': AuthenticationExtensionsClientOutputsToJSON(value['clientExtensionResults']),
     };
 }

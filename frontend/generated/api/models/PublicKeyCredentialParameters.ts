@@ -13,21 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { COSEAlgorithmIdentifier } from './COSEAlgorithmIdentifier';
-import {
-    COSEAlgorithmIdentifierFromJSON,
-    COSEAlgorithmIdentifierFromJSONTyped,
-    COSEAlgorithmIdentifierToJSON,
-    COSEAlgorithmIdentifierToJSONTyped,
-} from './COSEAlgorithmIdentifier';
-import type { PublicKeyCredentialType } from './PublicKeyCredentialType';
-import {
-    PublicKeyCredentialTypeFromJSON,
-    PublicKeyCredentialTypeFromJSONTyped,
-    PublicKeyCredentialTypeToJSON,
-    PublicKeyCredentialTypeToJSONTyped,
-} from './PublicKeyCredentialType';
-
 /**
  * 
  * @export
@@ -36,16 +21,16 @@ import {
 export interface PublicKeyCredentialParameters {
     /**
      * 
-     * @type {PublicKeyCredentialType}
+     * @type {string}
      * @memberof PublicKeyCredentialParameters
      */
-    type?: PublicKeyCredentialType;
+    type?: string;
     /**
      * 
-     * @type {COSEAlgorithmIdentifier}
+     * @type {number}
      * @memberof PublicKeyCredentialParameters
      */
-    alg?: COSEAlgorithmIdentifier;
+    alg?: number;
 }
 
 /**
@@ -65,8 +50,8 @@ export function PublicKeyCredentialParametersFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
-        'type': json['type'] == null ? undefined : PublicKeyCredentialTypeFromJSON(json['type']),
-        'alg': json['alg'] == null ? undefined : COSEAlgorithmIdentifierFromJSON(json['alg']),
+        'type': json['type'] == null ? undefined : json['type'],
+        'alg': json['alg'] == null ? undefined : json['alg'],
     };
 }
 
@@ -81,8 +66,8 @@ export function PublicKeyCredentialParametersToJSONTyped(value?: PublicKeyCreden
 
     return {
         
-        'type': PublicKeyCredentialTypeToJSON(value['type']),
-        'alg': COSEAlgorithmIdentifierToJSON(value['alg']),
+        'type': value['type'],
+        'alg': value['alg'],
     };
 }
 

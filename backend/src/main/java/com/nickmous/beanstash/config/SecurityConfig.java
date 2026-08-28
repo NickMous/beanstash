@@ -1,11 +1,15 @@
 package com.nickmous.beanstash.config;
 
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import tools.jackson.databind.JacksonModule;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +24,9 @@ import org.springframework.security.web.webauthn.management.PublicKeyCredentialU
 import org.springframework.security.web.webauthn.management.UserCredentialRepository;
 import org.springframework.security.web.webauthn.management.WebAuthnRelyingPartyOperations;
 import org.springframework.security.web.webauthn.management.Webauthn4JRelyingPartyOperations;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -32,9 +39,17 @@ public class SecurityConfig {
     @Value("${app.rp-id}")
     private String rpId;
 
+    // Parent domain the XSRF-TOKEN cookie is scoped to, e.g. "beanstash.org", so the
+    // front-end on beanstash.org can read a cookie set by api.beanstash.org. Leave empty
+    // for local dev (host-only cookie; localhost ignores the port so it still works).
+    @Value("${app.cookie-domain:}")
+    private String cookieDomain;
+
     @Bean
-    public SecurityFilterChain filterChain(org.springframework.security.config.annotation.web.builders.HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .cors(Customizer.withDefaults())
+            .csrf(CsrfConfigurer::spa)
             .authorizeHttpRequests((authorize)
                 -> authorize
                 .requestMatchers("/api/*/auth/**")
@@ -43,16 +58,12 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
-                .requestMatchers("/api/*/")
-                .authenticated()
                 .requestMatchers("/api/*/users/**")
                 .permitAll()
                 // Public read: gated by the authority (granted to everyone by default), not by
                 // authenticated(), so anonymous requests carrying user:read are allowed through.
                 .requestMatchers("/api/*/user/**")
                 .hasAuthority("user:read")
-                .requestMatchers("/api/**")
-                .authenticated()
                 .anyRequest()
                 .authenticated()
             )
@@ -75,6 +86,22 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        // websiteOrigin (app.url) is the front-end origin — the same value WebAuthn uses
+        // as its allowed origin. Must be explicit (not "*") because credentials are allowed.
+        config.setAllowedOrigins(List.of(websiteOrigin));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean

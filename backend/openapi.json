@@ -318,45 +318,20 @@
           }
         }
       },
-      "AuthenticatorAttachment" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "string"
-          }
-        }
-      },
       "AuthenticatorAttestationResponse" : {
         "type" : "object",
         "properties" : {
           "clientDataJSON" : {
-            "$ref" : "#/components/schemas/Bytes"
+            "type" : "string"
           },
           "attestationObject" : {
-            "$ref" : "#/components/schemas/Bytes"
+            "type" : "string"
           },
           "transports" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/AuthenticatorTransport"
+              "type" : "string"
             }
-          }
-        }
-      },
-      "AuthenticatorTransport" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "string"
-          }
-        }
-      },
-      "Bytes" : {
-        "type" : "object",
-        "properties" : {
-          "bytes" : {
-            "type" : "string",
-            "format" : "byte"
           }
         }
       },
@@ -367,27 +342,19 @@
             "type" : "string"
           },
           "type" : {
-            "$ref" : "#/components/schemas/PublicKeyCredentialType"
+            "type" : "string"
           },
           "rawId" : {
-            "$ref" : "#/components/schemas/Bytes"
+            "type" : "string"
           },
           "response" : {
             "$ref" : "#/components/schemas/AuthenticatorAttestationResponse"
           },
           "authenticatorAttachment" : {
-            "$ref" : "#/components/schemas/AuthenticatorAttachment"
+            "type" : "string"
           },
           "clientExtensionResults" : {
             "$ref" : "#/components/schemas/AuthenticationExtensionsClientOutputs"
-          }
-        }
-      },
-      "PublicKeyCredentialType" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "string"
           }
         }
       },
@@ -425,14 +392,6 @@
         },
         "required" : [ "email", "firstName", "lastName", "username" ]
       },
-      "AttestationConveyancePreference" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "string"
-          }
-        }
-      },
       "AuthenticationExtensionsClientInput" : {
         "type" : "object",
         "properties" : {
@@ -457,22 +416,13 @@
         "type" : "object",
         "properties" : {
           "authenticatorAttachment" : {
-            "$ref" : "#/components/schemas/AuthenticatorAttachment"
+            "type" : "string"
           },
           "residentKey" : {
-            "$ref" : "#/components/schemas/ResidentKeyRequirement"
+            "type" : "string"
           },
           "userVerification" : {
-            "$ref" : "#/components/schemas/UserVerificationRequirement"
-          }
-        }
-      },
-      "COSEAlgorithmIdentifier" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "integer",
-            "format" : "int64"
+            "type" : "string"
           }
         }
       },
@@ -486,7 +436,7 @@
             "$ref" : "#/components/schemas/PublicKeyCredentialUserEntity"
           },
           "challenge" : {
-            "$ref" : "#/components/schemas/Bytes"
+            "type" : "string"
           },
           "pubKeyCredParams" : {
             "type" : "array",
@@ -507,7 +457,7 @@
             "$ref" : "#/components/schemas/AuthenticatorSelectionCriteria"
           },
           "attestation" : {
-            "$ref" : "#/components/schemas/AttestationConveyancePreference"
+            "type" : "string"
           },
           "extensions" : {
             "$ref" : "#/components/schemas/AuthenticationExtensionsClientInputs"
@@ -518,15 +468,15 @@
         "type" : "object",
         "properties" : {
           "type" : {
-            "$ref" : "#/components/schemas/PublicKeyCredentialType"
+            "type" : "string"
           },
           "id" : {
-            "$ref" : "#/components/schemas/Bytes"
+            "type" : "string"
           },
           "transports" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/AuthenticatorTransport"
+              "type" : "string"
             },
             "uniqueItems" : true
           }
@@ -536,10 +486,11 @@
         "type" : "object",
         "properties" : {
           "type" : {
-            "$ref" : "#/components/schemas/PublicKeyCredentialType"
+            "type" : "string"
           },
           "alg" : {
-            "$ref" : "#/components/schemas/COSEAlgorithmIdentifier"
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -561,25 +512,9 @@
             "type" : "string"
           },
           "id" : {
-            "$ref" : "#/components/schemas/Bytes"
+            "type" : "string"
           },
           "displayName" : {
-            "type" : "string"
-          }
-        }
-      },
-      "ResidentKeyRequirement" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
-            "type" : "string"
-          }
-        }
-      },
-      "UserVerificationRequirement" : {
-        "type" : "object",
-        "properties" : {
-          "value" : {
             "type" : "string"
           }
         }

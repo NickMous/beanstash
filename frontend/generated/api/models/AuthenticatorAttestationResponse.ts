@@ -13,21 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { Bytes } from './Bytes';
-import {
-    BytesFromJSON,
-    BytesFromJSONTyped,
-    BytesToJSON,
-    BytesToJSONTyped,
-} from './Bytes';
-import type { AuthenticatorTransport } from './AuthenticatorTransport';
-import {
-    AuthenticatorTransportFromJSON,
-    AuthenticatorTransportFromJSONTyped,
-    AuthenticatorTransportToJSON,
-    AuthenticatorTransportToJSONTyped,
-} from './AuthenticatorTransport';
-
 /**
  * 
  * @export
@@ -36,22 +21,22 @@ import {
 export interface AuthenticatorAttestationResponse {
     /**
      * 
-     * @type {Bytes}
+     * @type {string}
      * @memberof AuthenticatorAttestationResponse
      */
-    clientDataJSON?: Bytes;
+    clientDataJSON?: string;
     /**
      * 
-     * @type {Bytes}
+     * @type {string}
      * @memberof AuthenticatorAttestationResponse
      */
-    attestationObject?: Bytes;
+    attestationObject?: string;
     /**
      * 
-     * @type {Array<AuthenticatorTransport>}
+     * @type {Array<string>}
      * @memberof AuthenticatorAttestationResponse
      */
-    transports?: Array<AuthenticatorTransport>;
+    transports?: Array<string>;
 }
 
 /**
@@ -71,9 +56,9 @@ export function AuthenticatorAttestationResponseFromJSONTyped(json: any, ignoreD
     }
     return {
         
-        'clientDataJSON': json['clientDataJSON'] == null ? undefined : BytesFromJSON(json['clientDataJSON']),
-        'attestationObject': json['attestationObject'] == null ? undefined : BytesFromJSON(json['attestationObject']),
-        'transports': json['transports'] == null ? undefined : ((json['transports'] as Array<any>).map(AuthenticatorTransportFromJSON)),
+        'clientDataJSON': json['clientDataJSON'] == null ? undefined : json['clientDataJSON'],
+        'attestationObject': json['attestationObject'] == null ? undefined : json['attestationObject'],
+        'transports': json['transports'] == null ? undefined : json['transports'],
     };
 }
 
@@ -88,9 +73,9 @@ export function AuthenticatorAttestationResponseToJSONTyped(value?: Authenticato
 
     return {
         
-        'clientDataJSON': BytesToJSON(value['clientDataJSON']),
-        'attestationObject': BytesToJSON(value['attestationObject']),
-        'transports': value['transports'] == null ? undefined : ((value['transports'] as Array<any>).map(AuthenticatorTransportToJSON)),
+        'clientDataJSON': value['clientDataJSON'],
+        'attestationObject': value['attestationObject'],
+        'transports': value['transports'],
     };
 }
 

@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { Bytes } from './Bytes';
-import {
-    BytesFromJSON,
-    BytesFromJSONTyped,
-    BytesToJSON,
-    BytesToJSONTyped,
-} from './Bytes';
-
 /**
  * 
  * @export
@@ -35,10 +27,10 @@ export interface PublicKeyCredentialUserEntity {
     name?: string;
     /**
      * 
-     * @type {Bytes}
+     * @type {string}
      * @memberof PublicKeyCredentialUserEntity
      */
-    id?: Bytes;
+    id?: string;
     /**
      * 
      * @type {string}
@@ -65,7 +57,7 @@ export function PublicKeyCredentialUserEntityFromJSONTyped(json: any, ignoreDisc
     return {
         
         'name': json['name'] == null ? undefined : json['name'],
-        'id': json['id'] == null ? undefined : BytesFromJSON(json['id']),
+        'id': json['id'] == null ? undefined : json['id'],
         'displayName': json['displayName'] == null ? undefined : json['displayName'],
     };
 }
@@ -82,7 +74,7 @@ export function PublicKeyCredentialUserEntityToJSONTyped(value?: PublicKeyCreden
     return {
         
         'name': value['name'],
-        'id': BytesToJSON(value['id']),
+        'id': value['id'],
         'displayName': value['displayName'],
     };
 }
