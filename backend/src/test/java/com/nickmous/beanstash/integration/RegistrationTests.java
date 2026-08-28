@@ -140,6 +140,17 @@ public class RegistrationTests {
     }
 
     @Test
+    void verifyTotp_withUnknownUsername_returns400() throws Exception {
+        var verifyRequest = new VerifyTotpRequest("nosuchuser", "000000");
+
+        mockMvc.perform(post("/api/v1/auth/register/verify-totp")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(verifyRequest)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void verifyTotp_withInvalidCode_returns400() throws Exception {
         var registerRequest = new RegisterRequest("badcodeuser", "badcode@example.com", "securepassword1", "Bad", "Code");
 
