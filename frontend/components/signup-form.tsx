@@ -4,7 +4,7 @@ import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useTranslations} from "@/lang/utils";
 import {authApi} from "@/app/apiClient";
 import {
@@ -27,16 +27,23 @@ enum SignupMethod {
     Totp = "totp",
 }
 
+enum SignupStep {
+    Register = "register",
+    // Register form is fading out; the TOTP step mounts once the transition ends.
+    RegisterFadingOut = "register-fading-out",
+    Totp = "totp",
+}
+
 export function SignupForm({
                                className,
                                ...props
                            }: React.ComponentProps<"div">) {
     const { SVG } = useQRCode();
 
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState(() => localStorage.getItem(LOCALSTORAGE_USERNAME_KEY) ?? "");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState(() => localStorage.getItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY) ?? "");
     const [password, setPassword] = useState("");
 
     const [signupMethod, setSignupMethod] = useState<SignupMethod>(SignupMethod.Unspecified);
@@ -46,44 +53,18 @@ export function SignupForm({
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const [totpVerificationNumber, setTotpVerificationNumber] = useState("");
-    const [totpAuthUri, setTotpAuthUri] = useState<string | null>(null);
+    const [totpAuthUri, setTotpAuthUri] = useState<string | null>(() => localStorage.getItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY));
+
+    // Resume an interrupted TOTP setup when the values above were restored from localStorage.
+    const [step, setStep] = useState<SignupStep>(() =>
+        username !== "" && totpAuthUri !== null && totpAuthUri !== ""
+            ? SignupStep.Totp
+            : SignupStep.Register
+    );
 
     const t = useTranslations("en", "auth");
 
     const commonFilled = Boolean(username && email && firstName && lastName);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') {
-            return;
-        }
-
-        const storedUsername = localStorage.getItem(LOCALSTORAGE_USERNAME_KEY);
-        const storedEmail = localStorage.getItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY);
-        const storedTotpAuthUri = localStorage.getItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY);
-
-        if (storedUsername !== null && storedTotpAuthUri !== null) {
-            setUsername(storedUsername);
-            setTotpAuthUri(storedTotpAuthUri);
-
-            if (storedEmail !== null) {
-                setEmail(storedEmail);
-            }
-
-            const registerForm = document.getElementById("registerForm");
-            const totpForm = document.getElementById("totpForm");
-
-            if (registerForm === null || totpForm === null) {
-                throw new Error("registerForm or totpForm not found");
-            }
-
-            registerForm.classList.toggle("opacity-0");
-            registerForm.classList.toggle("opacity-100");
-            registerForm.classList.toggle("hidden");
-            totpForm.classList.toggle("hidden");
-            totpForm.classList.toggle("opacity-100");
-            totpForm.classList.toggle("opacity-0");
-        }
-    }, [])
 
     async function handleTotpSignup() {
         setSignupMethod(SignupMethod.Totp);
@@ -140,6 +121,9 @@ export function SignupForm({
     }
 
     function retrieveTotp() {
+        setErrorMessage(null);
+        setStep(SignupStep.RegisterFadingOut);
+
         authApi.register({
             registerRequest: {
                 username: username,
@@ -157,196 +141,221 @@ export function SignupForm({
             localStorage.setItem(LOCALSTORAGE_USERNAME_KEY, username);
             localStorage.setItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY, email);
             localStorage.setItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY, r.otpAuthUri);
-        })
-
-        const registerForm = document.getElementById("registerForm");
-        const totpForm = document.getElementById("totpForm");
-
-        if (registerForm === null || totpForm === null) {
-            throw new Error("registerForm or totpForm not found");
-        }
-
-        registerForm.addEventListener("transitionend", () => {
-            registerForm.addEventListener("transitionend", () => {});
-
-            registerForm.classList.toggle("hidden");
-            totpForm.classList.toggle("hidden");
-            totpForm.classList.toggle("opacity-100");
-            totpForm.classList.toggle("opacity-0");
-        })
-
-        registerForm.classList.toggle("opacity-0");
-        registerForm.classList.toggle("opacity-100");
+        }).catch(error => {
+            console.error("TOTP registration failed", error);
+            setErrorMessage(t('totp.registration-failed'));
+            setStep(SignupStep.Register);
+        });
     }
 
     function verifyTotp() {
-        // Don't forget to clear the localstorage
+        setErrorMessage(null);
+        authApi.verifyTotp({
+            verifyTotpRequest: {
+                username: username,
+                code: totpVerificationNumber,
+            }
+        })
+            .then(() => {
+                setSuccessMessage(t('totp_verification_completed'))
+                localStorage.removeItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY);
+                localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
+                localStorage.removeItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY);
+            })
+            .catch(() => {
+                setErrorMessage(t('totp_verification_failed'))
+            })
     }
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <form onSubmit={handleSubmit} className={cn("transition-opacity duration-300 opacity-100")} id="registerForm">
-                <FieldGroup>
-                    <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="text-xl font-bold">{t('welcome-to')} Beanstash</h1>
-                        <FieldDescription>
-                            {t('already-have-account')} <a href="/signin">{t('sign-in')}</a>
-                        </FieldDescription>
-                    </div>
-                    <Field>
-                        <FieldLabel htmlFor="username">{t('username')}</FieldLabel>
-                        <Input
-                            id="username"
-                            type="text"
-                            autoComplete="username"
-                            required
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                        />
-                    </Field>
-                    <div className="grid grid-cols-2 gap-4">
+            {step !== SignupStep.Totp && (
+                <form
+                    onSubmit={handleSubmit}
+                    className={cn(
+                        "transition-opacity duration-300",
+                        step === SignupStep.RegisterFadingOut ? "opacity-0" : "opacity-100",
+                    )}
+                    onTransitionEnd={(e) => {
+                        // Child transitions (e.g. button hovers) bubble up here too.
+                        if (e.target === e.currentTarget && step === SignupStep.RegisterFadingOut) {
+                            setStep(SignupStep.Totp);
+                        }
+                    }}
+                >
+                    <FieldGroup>
+                        <div className="flex flex-col items-center gap-2 text-center">
+                            <h1 className="text-xl font-bold">{t('welcome-to')} Beanstash</h1>
+                            <FieldDescription>
+                                {t('already-have-account')} <a href="/signin">{t('sign-in')}</a>
+                            </FieldDescription>
+                        </div>
                         <Field>
-                            <FieldLabel htmlFor="firstName">{t('first-name')}</FieldLabel>
+                            <FieldLabel htmlFor="username">{t('username')}</FieldLabel>
                             <Input
-                                id="firstName"
+                                id="username"
                                 type="text"
-                                autoComplete="given-name"
+                                autoComplete="username"
                                 required
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                             />
                         </Field>
-                        <Field>
-                            <FieldLabel htmlFor="lastName">{t('last-name')}</FieldLabel>
-                            <Input
-                                id="lastName"
-                                type="text"
-                                autoComplete="family-name"
-                                required
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                            />
-                        </Field>
-                    </div>
-                    <Field>
-                        <FieldLabel htmlFor="email">{t('email')}</FieldLabel>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
-                            autoComplete="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </Field>
-                    <FieldDescription className="text-center">
-                        {t('choose-method')}
-                    </FieldDescription>
-                    <Field className="grid gap-4">
-                        <Button
-                            variant="default"
-                            type="button"
-                            disabled={!commonFilled || signupButtonsDisabled}
-                            onClick={handlePasskeySignup}
-                        >
-                            {t('use-passkey')}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            type="button"
-                            disabled={!commonFilled || signupButtonsDisabled}
-                            onClick={handleTotpSignup}
-                        >
-                            {t('use-totp')}
-                        </Button>
-                    </Field>
-                    {errorMessage && (
-                        <FieldDescription className="text-center text-destructive">
-                            {errorMessage}
-                        </FieldDescription>
-                    )}
-                    {successMessage && (
-                        <FieldDescription className="text-center text-emerald-400">
-                            {successMessage}
-                        </FieldDescription>
-                    )}
-                    {signupMethod === SignupMethod.Totp && (
-                        <>
-                            <FieldSeparator />
+                        <div className="grid grid-cols-2 gap-4">
                             <Field>
-                                <FieldLabel htmlFor="password">{t('password')}</FieldLabel>
+                                <FieldLabel htmlFor="firstName">{t('first-name')}</FieldLabel>
                                 <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder={t('very-secure-password')}
-                                    autoComplete="password"
-                                    minLength={MIN_PASSWORD_LENGTH}
+                                    id="firstName"
+                                    type="text"
+                                    autoComplete="given-name"
                                     required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
                                 />
                             </Field>
                             <Field>
-                                <Button
-                                    variant="default"
-                                    type="button"
-                                    disabled={!password}
-                                    onClick={retrieveTotp}
-                                >
-                                    {t('retrieve-totp-code')}
-                                </Button>
+                                <FieldLabel htmlFor="lastName">{t('last-name')}</FieldLabel>
+                                <Input
+                                    id="lastName"
+                                    type="text"
+                                    autoComplete="family-name"
+                                    required
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                />
                             </Field>
-                        </>
-                    )}
-                </FieldGroup>
-            </form>
-            {/*<FieldDescription className="px-6 text-center">*/}
-            {/*  By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}*/}
-            {/*  and <a href="#">Privacy Policy</a>.*/}
-            {/*</FieldDescription>*/}
-            <form onSubmit={handleSubmit} className={cn("transition-opacity duration-300 opacity-0 hidden")} id="totpForm">
-                <FieldGroup>
-                    <div className="flex flex-col items-center gap-2 text-center">
-                        <h1 className="text-xl font-bold">{t('setup-totp-title')}</h1>
-                        <FieldDescription>
-                            {t('setup-totp-description', {email: email})}
+                        </div>
+                        <Field>
+                            <FieldLabel htmlFor="email">{t('email')}</FieldLabel>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="m@example.com"
+                                autoComplete="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </Field>
+                        <FieldDescription className="text-center">
+                            {t('choose-method')}
                         </FieldDescription>
-                    </div>
-                    {totpAuthUri !== null ? (
-                        <SVG
-                            text={'https://github.com/bunlong/next-qrcode'}
-                            options={{
-                                margin: 2,
-                            }}
-                        />
-                    ) : (
-                        <Skeleton className="aspect-square" />
-                    )}
-                    <FieldSeparator />
-                    <Field>
-                        <FieldLabel htmlFor="totpVerification">{t('verify-the-totp-code')}</FieldLabel>
-                        <Input
-                            id="totpVerification"
-                            type="number"
-                            minLength={6}
-                            maxLength={6}
-                            value={totpVerificationNumber}
-                            onChange={(e) => setTotpVerificationNumber(e.target.value)}
-                        />
-                    </Field>
-                    <Field>
-                        <Button
-                            variant="default"
-                            type="submit"
-                            disabled={totpVerificationNumber.length !== 6}
-                            onClick={verifyTotp}
-                        >
-                            {t('verify-totp')}
-                        </Button>
-                    </Field>
-                </FieldGroup>
-            </form>
+                        <Field className="grid gap-4">
+                            <Button
+                                variant="default"
+                                type="button"
+                                disabled={!commonFilled || signupButtonsDisabled}
+                                onClick={handlePasskeySignup}
+                            >
+                                {t('use-passkey')}
+                            </Button>
+                            <Button
+                                variant="outline"
+                                type="button"
+                                disabled={!commonFilled || signupButtonsDisabled}
+                                onClick={handleTotpSignup}
+                            >
+                                {t('use-totp')}
+                            </Button>
+                        </Field>
+                        {errorMessage && (
+                            <FieldDescription className="text-center text-destructive">
+                                {errorMessage}
+                            </FieldDescription>
+                        )}
+                        {successMessage && (
+                            <FieldDescription className="text-center text-emerald-400">
+                                {successMessage}
+                            </FieldDescription>
+                        )}
+                        {signupMethod === SignupMethod.Totp && (
+                            <>
+                                <FieldSeparator />
+                                <Field>
+                                    <FieldLabel htmlFor="password">{t('password')}</FieldLabel>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        placeholder={t('very-secure-password')}
+                                        autoComplete="password"
+                                        minLength={MIN_PASSWORD_LENGTH}
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </Field>
+                                <Field>
+                                    <Button
+                                        variant="default"
+                                        type="button"
+                                        disabled={!password}
+                                        onClick={retrieveTotp}
+                                    >
+                                        {t('retrieve-totp-code')}
+                                    </Button>
+                                </Field>
+                            </>
+                        )}
+                    </FieldGroup>
+                </form>
+            )}
+            {step === SignupStep.Totp && (
+                <form onSubmit={handleSubmit} className="animate-in fade-in duration-300">
+                    <FieldGroup>
+                        <div className="flex flex-col items-center gap-2 text-center">
+                            <h1 className="text-xl font-bold">{t('setup-totp-title')}</h1>
+                            <FieldDescription>
+                                {t('setup-totp-description', {email: email})}
+                            </FieldDescription>
+                        </div>
+                        {totpAuthUri !== null ? (
+                            <>
+                                <SVG
+                                    text={totpAuthUri}
+                                    options={{
+                                        margin: 2,
+                                    }}
+                                />
+                                {/*<p>URL: {totpAuthUri}</p>*/}
+                            </>
+                        ) : (
+                            <Skeleton className="aspect-square" />
+                        )}
+                        <FieldSeparator />
+                        <Field>
+                            <FieldLabel htmlFor="totpVerification">{t('verify-the-totp-code')}</FieldLabel>
+                            <Input
+                                id="totpVerification"
+                                type="number"
+                                minLength={6}
+                                maxLength={6}
+                                value={totpVerificationNumber}
+                                onChange={(e) => setTotpVerificationNumber(e.target.value)}
+                            />
+                        </Field>
+                        {errorMessage && (
+                            <FieldDescription className="text-center text-destructive">
+                                {errorMessage}
+                            </FieldDescription>
+                        )}
+                        {successMessage && (
+                            <FieldDescription className="text-center text-emerald-400">
+                                {successMessage}
+                            </FieldDescription>
+                        )}
+                        <Field>
+                            <Button
+                                variant="default"
+                                type="submit"
+                                disabled={totpVerificationNumber.length !== 6}
+                                onClick={verifyTotp}
+                            >
+                                {t('verify-totp')}
+                            </Button>
+                        </Field>
+                    </FieldGroup>
+                </form>
+            )}
         </div>
     )
 }

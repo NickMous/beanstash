@@ -20,9 +20,14 @@ export default {
         "already-registered": "Deze passkey is al geregistreerd. Probeer een andere passkey.",
         "registration-failed": "Registratie van de passkey is mislukt. Probeer het opnieuw.",
     },
+    "totp": {
+        "registration-failed": "Registratie is mislukt. Probeer het opnieuw.",
+    },
     "registration-success": "Succesvol geregistreerd!",
     "very-secure-password": "superveilig-wachtwoord",
     "retrieve-totp-code": "Haal TOTP code op",
     "verify-the-totp-code": "Verifieer de TOTP code van jouw authenticatie-app",
-    "verify-totp": "TOTP Code verifiëren"
+    "verify-totp": "TOTP Code verifiëren",
+    totp_verification_completed: "Verificatie voltooid, we sturen je naar home...",
+    totp_verification_failed: "Verificatie mislukt, voer a.u.b. het gegenereerde nummer in uit je 2fa app."
 }

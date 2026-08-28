@@ -20,9 +20,14 @@ export default {
         "already-registered": "This passkey is already registered. Try a different passkey.",
         "registration-failed": "Passkey registration failed. Please try again.",
     },
+    "totp": {
+        "registration-failed": "Registration failed. Please try again.",
+    },
     "registration-success": "Successfully registered!",
     "very-secure-password": "very-secure-password",
     "retrieve-totp-code": "Retrieve TOTP code",
     "verify-the-totp-code": "Verify the TOTP code from your authenticator app",
-    "verify-totp": "Verify TOTP"
+    "verify-totp": "Verify TOTP",
+    totp_verification_completed: "Verification completed, we're sending you to home...",
+    totp_verification_failed: "Verification failed, please enter the generated number in your 2fa app."
 }
