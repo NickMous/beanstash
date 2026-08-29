@@ -23,6 +23,17 @@ jobs:
       - name: Compile and lint
         run: mvn compile --batch-mode
 
+      # `mvn compile` regenerates frontend/generated from backend/openapi.json.
+      # The client stays committed because the frontend image is built without a
+      # JDK, so this is what stops it drifting from the spec.
+      - name: Check generated API client is up to date
+        run: |
+          if [ -n "$(git status --porcelain -- frontend/generated)" ]; then
+            echo "::error::frontend/generated is stale. Run 'mvn compile' and commit the result."
+            git diff -- frontend/generated
+            exit 1
+          fi
+
   unit-tests:
     runs-on: ubuntu-latest
     steps:

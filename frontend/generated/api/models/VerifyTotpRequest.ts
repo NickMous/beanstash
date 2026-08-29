@@ -21,24 +21,20 @@ import { mapValues } from '../runtime';
 export interface VerifyTotpRequest {
     /**
      * 
-     * @type {string}
-     * @memberof VerifyTotpRequest
-     */
-    username: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof VerifyTotpRequest
      */
     code: string;
+    /**
+     * 
+     */
+    username: string;
 }
 
 /**
  * Check if a given object implements the VerifyTotpRequest interface.
  */
 export function instanceOfVerifyTotpRequest(value: object): value is VerifyTotpRequest {
-    if (!('username' in value) || value['username'] === undefined) return false;
     if (!('code' in value) || value['code'] === undefined) return false;
+    if (!('username' in value) || value['username'] === undefined) return false;
     return true;
 }
 
@@ -52,8 +48,8 @@ export function VerifyTotpRequestFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'username': json['username'],
         'code': json['code'],
+        'username': json['username'],
     };
 }
 
@@ -68,8 +64,8 @@ export function VerifyTotpRequestToJSONTyped(value?: VerifyTotpRequest | null, i
 
     return {
         
-        'username': value['username'],
         'code': value['code'],
+        'username': value['username'],
     };
 }
 

@@ -25,15 +25,27 @@ import {
 } from '../models/UpdateRequest';
 
 export interface DeleteRequest {
+    /**
+     * 
+     */
     username: string;
 }
 
 export interface ReadRequest {
+    /**
+     * 
+     */
     username: string;
 }
 
 export interface UpdateOperationRequest {
+    /**
+     * 
+     */
     username: string;
+    /**
+     * 
+     */
     updateRequest: UpdateRequest;
 }
 

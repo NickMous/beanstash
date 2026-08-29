@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface UpdateRequest {
     /**
      * 
-     * @type {string}
-     * @memberof UpdateRequest
      */
     email?: string;
     /**
      * 
-     * @type {string}
-     * @memberof UpdateRequest
      */
     firstName?: string;
     /**
      * 
-     * @type {string}
-     * @memberof UpdateRequest
      */
     lastName?: string;
 }

@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface AuthenticationExtensionsClientOutputObject {
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticationExtensionsClientOutputObject
      */
     extensionId?: string;
     /**
      * 
-     * @type {any}
-     * @memberof AuthenticationExtensionsClientOutputObject
      */
     output?: any | null;
 }
@@ -51,7 +47,7 @@ export function AuthenticationExtensionsClientOutputObjectFromJSONTyped(json: an
     return {
         
         'extensionId': json['extensionId'] == null ? undefined : json['extensionId'],
-        'output': json['output'] == null ? undefined : json['output'],
+        'output': json['output'] === undefined ? undefined : json['output'] === null ? null : json['output'],
     };
 }
 

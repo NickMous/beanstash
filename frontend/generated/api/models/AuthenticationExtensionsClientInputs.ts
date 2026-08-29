@@ -29,8 +29,6 @@ import {
 export interface AuthenticationExtensionsClientInputs {
     /**
      * 
-     * @type {Array<AuthenticationExtensionsClientInput>}
-     * @memberof AuthenticationExtensionsClientInputs
      */
     inputs?: Array<AuthenticationExtensionsClientInput>;
 }

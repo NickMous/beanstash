@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface AuthenticatorAttestationResponse {
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticatorAttestationResponse
-     */
-    clientDataJSON?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthenticatorAttestationResponse
      */
     attestationObject?: string;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof AuthenticatorAttestationResponse
+     */
+    clientDataJSON?: string;
+    /**
+     * 
      */
     transports?: Array<string>;
 }
@@ -56,8 +50,8 @@ export function AuthenticatorAttestationResponseFromJSONTyped(json: any, ignoreD
     }
     return {
         
-        'clientDataJSON': json['clientDataJSON'] == null ? undefined : json['clientDataJSON'],
         'attestationObject': json['attestationObject'] == null ? undefined : json['attestationObject'],
+        'clientDataJSON': json['clientDataJSON'] == null ? undefined : json['clientDataJSON'],
         'transports': json['transports'] == null ? undefined : json['transports'],
     };
 }
@@ -73,8 +67,8 @@ export function AuthenticatorAttestationResponseToJSONTyped(value?: Authenticato
 
     return {
         
-        'clientDataJSON': value['clientDataJSON'],
         'attestationObject': value['attestationObject'],
+        'clientDataJSON': value['clientDataJSON'],
         'transports': value['transports'],
     };
 }

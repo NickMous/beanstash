@@ -263,11 +263,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.openapitools</groupId>
-				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>7.25.0</version>
-			</plugin>
-			<plugin>
 				<groupId>org.gaul</groupId>
 				<artifactId>modernizer-maven-plugin</artifactId>
 				<version>3.5.0</version>
@@ -397,40 +392,6 @@
 									<goal>integration-test</goal>
 									<goal>verify</goal>
 								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>generate-api-client</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.openapitools</groupId>
-						<artifactId>openapi-generator-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>generate-frontend-client</id>
-								<phase>post-integration-test</phase>
-								<goals>
-									<goal>generate</goal>
-								</goals>
-								<configuration>
-									<inputSpec>${project.basedir}/openapi.json</inputSpec>
-									<generatorName>typescript-fetch</generatorName>
-									<output>${project.basedir}/../frontend/generated/api</output>
-									<cleanupOutput>true</cleanupOutput>
-									<generateApiTests>false</generateApiTests>
-									<generateModelTests>false</generateModelTests>
-									<generateApiDocumentation>false</generateApiDocumentation>
-									<generateModelDocumentation>false</generateModelDocumentation>
-									<configOptions>
-										<supportsES6>true</supportsES6>
-										<withInterfaces>true</withInterfaces>
-									</configOptions>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>

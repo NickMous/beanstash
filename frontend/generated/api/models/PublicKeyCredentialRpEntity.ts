@@ -21,16 +21,12 @@ import { mapValues } from '../runtime';
 export interface PublicKeyCredentialRpEntity {
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialRpEntity
-     */
-    name?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialRpEntity
      */
     id?: string;
+    /**
+     * 
+     */
+    name?: string;
 }
 
 /**
@@ -50,8 +46,8 @@ export function PublicKeyCredentialRpEntityFromJSONTyped(json: any, ignoreDiscri
     }
     return {
         
-        'name': json['name'] == null ? undefined : json['name'],
         'id': json['id'] == null ? undefined : json['id'],
+        'name': json['name'] == null ? undefined : json['name'],
     };
 }
 
@@ -66,8 +62,8 @@ export function PublicKeyCredentialRpEntityToJSONTyped(value?: PublicKeyCredenti
 
     return {
         
-        'name': value['name'],
         'id': value['id'],
+        'name': value['name'],
     };
 }
 

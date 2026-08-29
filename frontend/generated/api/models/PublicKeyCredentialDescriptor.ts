@@ -21,22 +21,16 @@ import { mapValues } from '../runtime';
 export interface PublicKeyCredentialDescriptor {
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialDescriptor
-     */
-    type?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialDescriptor
      */
     id?: string;
     /**
      * 
-     * @type {Set<string>}
-     * @memberof PublicKeyCredentialDescriptor
      */
     transports?: Set<string>;
+    /**
+     * 
+     */
+    type?: string;
 }
 
 /**
@@ -56,9 +50,9 @@ export function PublicKeyCredentialDescriptorFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
-        'type': json['type'] == null ? undefined : json['type'],
         'id': json['id'] == null ? undefined : json['id'],
         'transports': json['transports'] == null ? undefined : new Set(json['transports']),
+        'type': json['type'] == null ? undefined : json['type'],
     };
 }
 
@@ -73,9 +67,9 @@ export function PublicKeyCredentialDescriptorToJSONTyped(value?: PublicKeyCreden
 
     return {
         
-        'type': value['type'],
         'id': value['id'],
         'transports': value['transports'] == null ? undefined : Array.from(value['transports'] as Set<any>),
+        'type': value['type'],
     };
 }
 

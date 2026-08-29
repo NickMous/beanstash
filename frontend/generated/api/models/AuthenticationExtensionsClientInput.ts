@@ -21,14 +21,10 @@ import { mapValues } from '../runtime';
 export interface AuthenticationExtensionsClientInput {
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticationExtensionsClientInput
      */
     extensionId?: string;
     /**
      * 
-     * @type {any}
-     * @memberof AuthenticationExtensionsClientInput
      */
     input?: any | null;
 }
@@ -51,7 +47,7 @@ export function AuthenticationExtensionsClientInputFromJSONTyped(json: any, igno
     return {
         
         'extensionId': json['extensionId'] == null ? undefined : json['extensionId'],
-        'input': json['input'] == null ? undefined : json['input'],
+        'input': json['input'] === undefined ? undefined : json['input'] === null ? null : json['input'],
     };
 }
 

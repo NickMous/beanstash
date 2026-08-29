@@ -21,16 +21,12 @@ import { mapValues } from '../runtime';
 export interface PublicKeyCredentialParameters {
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialParameters
-     */
-    type?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof PublicKeyCredentialParameters
      */
     alg?: number;
+    /**
+     * 
+     */
+    type?: string;
 }
 
 /**
@@ -50,8 +46,8 @@ export function PublicKeyCredentialParametersFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
-        'type': json['type'] == null ? undefined : json['type'],
         'alg': json['alg'] == null ? undefined : json['alg'],
+        'type': json['type'] == null ? undefined : json['type'],
     };
 }
 
@@ -66,8 +62,8 @@ export function PublicKeyCredentialParametersToJSONTyped(value?: PublicKeyCreden
 
     return {
         
-        'type': value['type'],
         'alg': value['alg'],
+        'type': value['type'],
     };
 }
 
