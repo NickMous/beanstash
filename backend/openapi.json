@@ -482,8 +482,11 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "OK"
+          "204" : {
+            "description" : "User deleted"
+          },
+          "404" : {
+            "description" : "No user with that username"
           }
         },
         "tags" : [ "user-controller" ]
@@ -507,7 +510,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "The requested user"
+          },
+          "404" : {
+            "description" : "No user with that username"
           }
         },
         "tags" : [ "user-controller" ]
@@ -541,7 +547,10 @@
                 }
               }
             },
-            "description" : "OK"
+            "description" : "The updated user"
+          },
+          "404" : {
+            "description" : "No user with that username"
           }
         },
         "tags" : [ "user-controller" ]

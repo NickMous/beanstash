@@ -74,6 +74,7 @@ public class SecurityConfig {
             // withdraw/add can be enabled inside the filter later). Runs after
             // authentication and before authorization so both request matchers and
             // @PreAuthorize see the adjusted authorities.
+            .logout((logout) -> logout.logoutUrl("/api/v1/auth/logout"))
             .addFilterBefore(new IpAuthorityFilter(), AuthorizationFilter.class)
             .webAuthn(webAuthn -> webAuthn
                 .rpId(rpId)

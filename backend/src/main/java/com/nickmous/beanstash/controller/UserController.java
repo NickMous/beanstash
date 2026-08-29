@@ -1,10 +1,14 @@
 package com.nickmous.beanstash.controller;
 
+import com.nickmous.beanstash.annotations.UserNotFoundResponse;
 import com.nickmous.beanstash.controller.dto.user.request.UpdateRequest;
 import com.nickmous.beanstash.controller.dto.user.response.ReadResponse;
 import com.nickmous.beanstash.entity.User;
 import com.nickmous.beanstash.entity.UserType;
 import com.nickmous.beanstash.repository.UserRepository;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +55,9 @@ public class UserController {
 
     @GetMapping(path = "/user/{username}", version = "v1")
     @PreAuthorize("hasAuthority('user:read')")
+    @ApiResponse(responseCode = "200", description = "The requested user",
+        content = @Content(schema = @Schema(implementation = ReadResponse.class)))
+    @UserNotFoundResponse
     public ResponseEntity<ReadResponse> read(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
 
@@ -70,6 +77,9 @@ public class UserController {
 
     @PatchMapping(path = "/user/{username}", version = "v1")
     @PreAuthorize("hasAuthority('user:write') or #username == authentication.name")
+    @ApiResponse(responseCode = "200", description = "The updated user",
+        content = @Content(schema = @Schema(implementation = ReadResponse.class)))
+    @UserNotFoundResponse
     public ResponseEntity<ReadResponse> update(@PathVariable String username, @Valid @RequestBody UpdateRequest request) {
         User user = userRepository.findByUsername(username);
 
@@ -103,6 +113,8 @@ public class UserController {
 
     @DeleteMapping(path = "/user/{username}", version = "v1")
     @PreAuthorize("hasAuthority('user:write') or #username == authentication.name")
+    @ApiResponse(responseCode = "204", description = "User deleted", content = @Content)
+    @UserNotFoundResponse
     public ResponseEntity<Void> delete(@PathVariable String username) {
         User user = userRepository.findByUsername(username);
 
