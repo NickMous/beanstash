@@ -1,5 +1,7 @@
 import auth from "@/lang/en/auth";
 
-export default {
+const en = {
     auth: auth
-}
+};
+
+export default en;

@@ -1,4 +1,4 @@
-export default {
+const auth = {
     "welcome-to": "Welkom bij",
     "already-have-account": "Heb je al een account?",
     "sign-in": "Inloggen",
@@ -30,4 +30,6 @@ export default {
     "verify-totp": "TOTP Code verifiëren",
     totp_verification_completed: "Verificatie voltooid, we sturen je naar home...",
     totp_verification_failed: "Verificatie mislukt, voer a.u.b. het gegenereerde nummer in uit je 2fa app."
-}
+};
+
+export default auth;
