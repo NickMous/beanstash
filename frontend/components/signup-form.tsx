@@ -13,6 +13,7 @@ import {
 } from "@simplewebauthn/browser";
 import {Skeleton} from "@/components/ui/skeleton";
 import {useQRCode} from "next-qrcode";
+import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
@@ -324,14 +325,24 @@ export function SignupForm({
                         <FieldSeparator />
                         <Field>
                             <FieldLabel htmlFor="totpVerification">{t('verify-the-totp-code')}</FieldLabel>
-                            <Input
+                            <InputOTP
                                 id="totpVerification"
-                                type="number"
-                                minLength={6}
                                 maxLength={6}
                                 value={totpVerificationNumber}
-                                onChange={(e) => setTotpVerificationNumber(e.target.value)}
-                            />
+                                onChange={(newValue) => setTotpVerificationNumber(newValue)}
+                            >
+                                <InputOTPGroup>
+                                    <InputOTPSlot index={0} />
+                                    <InputOTPSlot index={1} />
+                                    <InputOTPSlot index={2} />
+                                </InputOTPGroup>
+                                <InputOTPSeparator />
+                                <InputOTPGroup>
+                                    <InputOTPSlot index={3} />
+                                    <InputOTPSlot index={4} />
+                                    <InputOTPSlot index={5} />
+                                </InputOTPGroup>
+                            </InputOTP>
                         </Field>
                         {errorMessage && (
                             <FieldDescription className="text-center text-destructive">
