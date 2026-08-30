@@ -54,6 +54,9 @@ public class SecurityConfig {
                 -> authorize
                 .requestMatchers("/api/*/auth/**")
                 .permitAll()
+                // Not /webauthn/**: that would also open up /webauthn/register.
+                .requestMatchers("/webauthn/authenticate/options", "/login/webauthn")
+                .permitAll()
                 .requestMatchers("/actuator/health")
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
@@ -74,7 +77,6 @@ public class SecurityConfig {
             // withdraw/add can be enabled inside the filter later). Runs after
             // authentication and before authorization so both request matchers and
             // @PreAuthorize see the adjusted authorities.
-            .logout((logout) -> logout.logoutUrl("/api/v1/auth/logout"))
             .addFilterBefore(new IpAuthorityFilter(), AuthorizationFilter.class)
             .webAuthn(webAuthn -> webAuthn
                 .rpId(rpId)
