@@ -29,7 +29,14 @@ const auth = {
     "verify-the-totp-code": "Verify the TOTP code from your authenticator app",
     "verify-totp": "Verify TOTP",
     totp_verification_completed: "Verification completed, we're sending you to home...",
-    totp_verification_failed: "Verification failed, please enter the generated number in your 2fa app."
+    totp_verification_failed: "Verification failed, please enter the generated number in your 2fa app.",
+    welcome_back: "Welcome back",
+    dont_have_an_account: "Don't have an account?",
+    sign_up: "Sign up",
+    log_in_with_passkey: "Log in with a passkey",
+    or: "or",
+    log_in_with_totp: "Log in with totp",
+    username_or_email: "Username or email",
 };
 
 export default auth;

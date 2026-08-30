@@ -29,7 +29,14 @@ const auth = {
     "verify-the-totp-code": "Verifieer de TOTP code van jouw authenticatie-app",
     "verify-totp": "TOTP Code verifiëren",
     totp_verification_completed: "Verificatie voltooid, we sturen je naar home...",
-    totp_verification_failed: "Verificatie mislukt, voer a.u.b. het gegenereerde nummer in uit je 2fa app."
+    totp_verification_failed: "Verificatie mislukt, voer a.u.b. het gegenereerde nummer in uit je 2fa app.",
+    welcome_back: "Welkom terug",
+    dont_have_an_account: "Heb je geen account?",
+    sign_up: "Maak een account",
+    log_in_with_passkey: "Log in met een passkey",
+    or: "of",
+    log_in_with_totp: "Log in met totp",
+    username_or_email: "Gebruikersnaam of e-mail",
 };
 
 export default auth;
