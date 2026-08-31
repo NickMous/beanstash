@@ -54,6 +54,9 @@ public class SecurityConfig {
                 -> authorize
                 .requestMatchers("/api/*/auth/**")
                 .permitAll()
+                // Not /webauthn/**: that would also open up /webauthn/register.
+                .requestMatchers("/webauthn/authenticate/options", "/login/webauthn")
+                .permitAll()
                 .requestMatchers("/actuator/health")
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")

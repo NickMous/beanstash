@@ -21,28 +21,20 @@ import { mapValues } from '../runtime';
 export interface ReadResponse {
     /**
      * 
-     * @type {string}
-     * @memberof ReadResponse
-     */
-    username?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ReadResponse
      */
     email?: string;
     /**
      * 
-     * @type {string}
-     * @memberof ReadResponse
      */
     firstName?: string;
     /**
      * 
-     * @type {string}
-     * @memberof ReadResponse
      */
     lastName?: string;
+    /**
+     * 
+     */
+    username?: string;
 }
 
 /**
@@ -62,10 +54,10 @@ export function ReadResponseFromJSONTyped(json: any, ignoreDiscriminator: boolea
     }
     return {
         
-        'username': json['username'] == null ? undefined : json['username'],
         'email': json['email'] == null ? undefined : json['email'],
         'firstName': json['firstName'] == null ? undefined : json['firstName'],
         'lastName': json['lastName'] == null ? undefined : json['lastName'],
+        'username': json['username'] == null ? undefined : json['username'],
     };
 }
 
@@ -80,10 +72,10 @@ export function ReadResponseToJSONTyped(value?: ReadResponse | null, ignoreDiscr
 
     return {
         
-        'username': value['username'],
         'email': value['email'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
+        'username': value['username'],
     };
 }
 

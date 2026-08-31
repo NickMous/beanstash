@@ -50,22 +50,37 @@ import {
 } from '../models/VerifyTotpRequest';
 
 export interface CompletePasskeyRegistrationRequest {
+    /**
+     * 
+     */
     relyingPartyPublicKey: RelyingPartyPublicKey;
 }
 
 export interface LoginOperationRequest {
+    /**
+     * 
+     */
     loginRequest: LoginRequest;
 }
 
 export interface PasskeyRegistrationOptionsOperationRequest {
+    /**
+     * 
+     */
     passkeyRegistrationOptionsRequest: PasskeyRegistrationOptionsRequest;
 }
 
 export interface RegisterOperationRequest {
+    /**
+     * 
+     */
     registerRequest: RegisterRequest;
 }
 
 export interface VerifyTotpOperationRequest {
+    /**
+     * 
+     */
     verifyTotpRequest: VerifyTotpRequest;
 }
 

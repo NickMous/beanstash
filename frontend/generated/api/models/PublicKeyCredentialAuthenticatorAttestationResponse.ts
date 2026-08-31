@@ -36,40 +36,28 @@ import {
 export interface PublicKeyCredentialAuthenticatorAttestationResponse {
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
-     */
-    id?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
-     */
-    type?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
-     */
-    rawId?: string;
-    /**
-     * 
-     * @type {AuthenticatorAttestationResponse}
-     * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
-     */
-    response?: AuthenticatorAttestationResponse;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
      */
     authenticatorAttachment?: string;
     /**
      * 
-     * @type {AuthenticationExtensionsClientOutputs}
-     * @memberof PublicKeyCredentialAuthenticatorAttestationResponse
      */
     clientExtensionResults?: AuthenticationExtensionsClientOutputs;
+    /**
+     * 
+     */
+    id?: string;
+    /**
+     * 
+     */
+    rawId?: string;
+    /**
+     * 
+     */
+    response?: AuthenticatorAttestationResponse;
+    /**
+     * 
+     */
+    type?: string;
 }
 
 /**
@@ -89,12 +77,12 @@ export function PublicKeyCredentialAuthenticatorAttestationResponseFromJSONTyped
     }
     return {
         
-        'id': json['id'] == null ? undefined : json['id'],
-        'type': json['type'] == null ? undefined : json['type'],
-        'rawId': json['rawId'] == null ? undefined : json['rawId'],
-        'response': json['response'] == null ? undefined : AuthenticatorAttestationResponseFromJSON(json['response']),
         'authenticatorAttachment': json['authenticatorAttachment'] == null ? undefined : json['authenticatorAttachment'],
         'clientExtensionResults': json['clientExtensionResults'] == null ? undefined : AuthenticationExtensionsClientOutputsFromJSON(json['clientExtensionResults']),
+        'id': json['id'] == null ? undefined : json['id'],
+        'rawId': json['rawId'] == null ? undefined : json['rawId'],
+        'response': json['response'] == null ? undefined : AuthenticatorAttestationResponseFromJSON(json['response']),
+        'type': json['type'] == null ? undefined : json['type'],
     };
 }
 
@@ -109,12 +97,12 @@ export function PublicKeyCredentialAuthenticatorAttestationResponseToJSONTyped(v
 
     return {
         
-        'id': value['id'],
-        'type': value['type'],
-        'rawId': value['rawId'],
-        'response': AuthenticatorAttestationResponseToJSON(value['response']),
         'authenticatorAttachment': value['authenticatorAttachment'],
         'clientExtensionResults': AuthenticationExtensionsClientOutputsToJSON(value['clientExtensionResults']),
+        'id': value['id'],
+        'rawId': value['rawId'],
+        'response': AuthenticatorAttestationResponseToJSON(value['response']),
+        'type': value['type'],
     };
 }
 

@@ -1,12 +1,13 @@
 const auth = {
     "welcome-to": "Welcome to",
     "already-have-account": "Already have an account?",
-    "sign-in": "Sign in",
+    log_in: "Log in",
     "email": "Email",
     "username": "Username",
     "first-name": "First name",
     "last-name": "Last name",
     "password": "Password",
+    totp_code: "TOTP-code",
     "password-hint": "Only needed to sign up with an authenticator app.",
     "choose-method": "Choose how you'd like to secure your account.",
     "use-totp": "Sign up with authenticator app",
@@ -29,7 +30,21 @@ const auth = {
     "verify-the-totp-code": "Verify the TOTP code from your authenticator app",
     "verify-totp": "Verify TOTP",
     totp_verification_completed: "Verification completed, we're sending you to home...",
-    totp_verification_failed: "Verification failed, please enter the generated number in your 2fa app."
+    totp_verification_failed: "Verification failed, please enter the generated number in your 2fa app.",
+    welcome_back: "Welcome back",
+    dont_have_an_account: "Don't have an account?",
+    sign_up: "Sign up",
+    log_in_with_passkey: "Log in with a passkey",
+    or: "or",
+    log_in_with_totp: "Log in with totp",
+    username_or_email: "Username or email",
+    follow_browser_instructions: "Follow your browser instructions",
+    user_not_found: "Sorry, the user has not been found!",
+    something_unexpected_happened: "Something unexpected happened, try again!",
+    sign_up_success: {
+        title: "Account created!",
+        description: "Please log in to continue"
+    },
 };
 
 export default auth;

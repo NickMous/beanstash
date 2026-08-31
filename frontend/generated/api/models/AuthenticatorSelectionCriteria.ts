@@ -21,20 +21,14 @@ import { mapValues } from '../runtime';
 export interface AuthenticatorSelectionCriteria {
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticatorSelectionCriteria
      */
     authenticatorAttachment?: string;
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticatorSelectionCriteria
      */
     residentKey?: string;
     /**
      * 
-     * @type {string}
-     * @memberof AuthenticatorSelectionCriteria
      */
     userVerification?: string;
 }

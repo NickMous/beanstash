@@ -29,14 +29,10 @@ import {
 export interface RelyingPartyPublicKey {
     /**
      * 
-     * @type {PublicKeyCredentialAuthenticatorAttestationResponse}
-     * @memberof RelyingPartyPublicKey
      */
     credential?: PublicKeyCredentialAuthenticatorAttestationResponse;
     /**
      * 
-     * @type {string}
-     * @memberof RelyingPartyPublicKey
      */
     label?: string;
 }

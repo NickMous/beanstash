@@ -21,22 +21,16 @@ import { mapValues } from '../runtime';
 export interface PublicKeyCredentialUserEntity {
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialUserEntity
      */
-    name?: string;
+    displayName?: string;
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialUserEntity
      */
     id?: string;
     /**
      * 
-     * @type {string}
-     * @memberof PublicKeyCredentialUserEntity
      */
-    displayName?: string;
+    name?: string;
 }
 
 /**
@@ -56,9 +50,9 @@ export function PublicKeyCredentialUserEntityFromJSONTyped(json: any, ignoreDisc
     }
     return {
         
-        'name': json['name'] == null ? undefined : json['name'],
-        'id': json['id'] == null ? undefined : json['id'],
         'displayName': json['displayName'] == null ? undefined : json['displayName'],
+        'id': json['id'] == null ? undefined : json['id'],
+        'name': json['name'] == null ? undefined : json['name'],
     };
 }
 
@@ -73,9 +67,9 @@ export function PublicKeyCredentialUserEntityToJSONTyped(value?: PublicKeyCreden
 
     return {
         
-        'name': value['name'],
-        'id': value['id'],
         'displayName': value['displayName'],
+        'id': value['id'],
+        'name': value['name'],
     };
 }
 

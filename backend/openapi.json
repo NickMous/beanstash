@@ -1,115 +1,358 @@
 {
-  "openapi" : "3.1.0",
+  "components" : {
+    "schemas" : {
+      "AuthenticationExtensionsClientInput" : {
+        "properties" : {
+          "extensionId" : {
+            "type" : "string"
+          },
+          "input" : { }
+        },
+        "type" : "object"
+      },
+      "AuthenticationExtensionsClientInputs" : {
+        "properties" : {
+          "inputs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/AuthenticationExtensionsClientInput"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "AuthenticationExtensionsClientOutputObject" : {
+        "properties" : {
+          "extensionId" : {
+            "type" : "string"
+          },
+          "output" : { }
+        },
+        "type" : "object"
+      },
+      "AuthenticationExtensionsClientOutputs" : {
+        "properties" : {
+          "outputs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/AuthenticationExtensionsClientOutputObject"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "AuthenticatorAttestationResponse" : {
+        "properties" : {
+          "attestationObject" : {
+            "type" : "string"
+          },
+          "clientDataJSON" : {
+            "type" : "string"
+          },
+          "transports" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "AuthenticatorSelectionCriteria" : {
+        "properties" : {
+          "authenticatorAttachment" : {
+            "type" : "string"
+          },
+          "residentKey" : {
+            "type" : "string"
+          },
+          "userVerification" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "LoginRequest" : {
+        "properties" : {
+          "password" : {
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "totpCode" : {
+            "type" : "string"
+          },
+          "username" : {
+            "minLength" : 1,
+            "type" : "string"
+          }
+        },
+        "required" : [ "password", "username" ],
+        "type" : "object"
+      },
+      "PasskeyRegistrationOptionsRequest" : {
+        "properties" : {
+          "email" : {
+            "format" : "email",
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "firstName" : {
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "lastName" : {
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "username" : {
+            "minLength" : 1,
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "firstName", "lastName", "username" ],
+        "type" : "object"
+      },
+      "PublicKeyCredentialAuthenticatorAttestationResponse" : {
+        "properties" : {
+          "authenticatorAttachment" : {
+            "type" : "string"
+          },
+          "clientExtensionResults" : {
+            "$ref" : "#/components/schemas/AuthenticationExtensionsClientOutputs"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "rawId" : {
+            "type" : "string"
+          },
+          "response" : {
+            "$ref" : "#/components/schemas/AuthenticatorAttestationResponse"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "PublicKeyCredentialCreationOptions" : {
+        "properties" : {
+          "attestation" : {
+            "type" : "string"
+          },
+          "authenticatorSelection" : {
+            "$ref" : "#/components/schemas/AuthenticatorSelectionCriteria"
+          },
+          "challenge" : {
+            "type" : "string"
+          },
+          "excludeCredentials" : {
+            "items" : {
+              "$ref" : "#/components/schemas/PublicKeyCredentialDescriptor"
+            },
+            "type" : "array"
+          },
+          "extensions" : {
+            "$ref" : "#/components/schemas/AuthenticationExtensionsClientInputs"
+          },
+          "pubKeyCredParams" : {
+            "items" : {
+              "$ref" : "#/components/schemas/PublicKeyCredentialParameters"
+            },
+            "type" : "array"
+          },
+          "rp" : {
+            "$ref" : "#/components/schemas/PublicKeyCredentialRpEntity"
+          },
+          "timeout" : {
+            "type" : "string"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/PublicKeyCredentialUserEntity"
+          }
+        },
+        "type" : "object"
+      },
+      "PublicKeyCredentialDescriptor" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "transports" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array",
+            "uniqueItems" : true
+          },
+          "type" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "PublicKeyCredentialParameters" : {
+        "properties" : {
+          "alg" : {
+            "format" : "int64",
+            "type" : "integer"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "PublicKeyCredentialRpEntity" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "PublicKeyCredentialUserEntity" : {
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "ReadResponse" : {
+        "properties" : {
+          "email" : {
+            "type" : "string"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "RegisterRequest" : {
+        "properties" : {
+          "email" : {
+            "format" : "email",
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "firstName" : {
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "lastName" : {
+            "minLength" : 1,
+            "type" : "string"
+          },
+          "password" : {
+            "maxLength" : 2147483647,
+            "minLength" : 12,
+            "type" : "string"
+          },
+          "username" : {
+            "minLength" : 1,
+            "type" : "string"
+          }
+        },
+        "required" : [ "email", "firstName", "lastName", "password", "username" ],
+        "type" : "object"
+      },
+      "RelyingPartyPublicKey" : {
+        "properties" : {
+          "credential" : {
+            "$ref" : "#/components/schemas/PublicKeyCredentialAuthenticatorAttestationResponse"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "TotpSetupResponse" : {
+        "properties" : {
+          "otpAuthUri" : {
+            "type" : "string"
+          },
+          "secret" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "UpdateRequest" : {
+        "properties" : {
+          "email" : {
+            "format" : "email",
+            "type" : "string"
+          },
+          "firstName" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "VerifyTotpRequest" : {
+        "properties" : {
+          "code" : {
+            "maxLength" : 6,
+            "minLength" : 6,
+            "type" : "string"
+          },
+          "username" : {
+            "minLength" : 1,
+            "type" : "string"
+          }
+        },
+        "required" : [ "code", "username" ],
+        "type" : "object"
+      }
+    }
+  },
   "info" : {
     "title" : "OpenAPI definition",
     "version" : "v0"
   },
-  "servers" : [ {
-    "url" : "http://localhost",
-    "description" : "Generated server url"
-  } ],
+  "openapi" : "3.1.0",
   "paths" : {
-    "/api/v1/auth/register" : {
-      "post" : {
-        "tags" : [ "auth-controller" ],
-        "operationId" : "register",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/RegisterRequest"
-              }
-            }
-          },
-          "required" : true
-        },
+    "/api/v1" : {
+      "get" : {
+        "operationId" : "home",
         "responses" : {
           "200" : {
-            "description" : "OK",
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TotpSetupResponse"
+                  "type" : "string"
                 }
               }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/auth/register/verify-totp" : {
-      "post" : {
-        "tags" : [ "auth-controller" ],
-        "operationId" : "verifyTotp",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/VerifyTotpRequest"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
+            },
             "description" : "OK"
           }
-        }
-      }
-    },
-    "/api/v1/auth/register/passkey" : {
-      "post" : {
-        "tags" : [ "auth-controller" ],
-        "operationId" : "completePasskeyRegistration",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/RelyingPartyPublicKey"
-              }
-            }
-          },
-          "required" : true
         },
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          }
-        }
-      }
-    },
-    "/api/v1/auth/register/passkey/options" : {
-      "post" : {
-        "tags" : [ "auth-controller" ],
-        "operationId" : "passkeyRegistrationOptions",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/PasskeyRegistrationOptionsRequest"
-              }
-            }
-          },
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/PublicKeyCredentialCreationOptions"
-                }
-              }
-            }
-          }
-        }
+        "tags" : [ "home-controller" ]
       }
     },
     "/api/v1/auth/login" : {
       "post" : {
-        "tags" : [ "auth-controller" ],
         "operationId" : "login",
         "requestBody" : {
           "content" : {
@@ -125,16 +368,134 @@
           "200" : {
             "description" : "OK"
           }
-        }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/v1/auth/register" : {
+      "post" : {
+        "operationId" : "register",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TotpSetupResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/v1/auth/register/passkey" : {
+      "post" : {
+        "operationId" : "completePasskeyRegistration",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RelyingPartyPublicKey"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/v1/auth/register/passkey/options" : {
+      "post" : {
+        "operationId" : "passkeyRegistrationOptions",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PasskeyRegistrationOptionsRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PublicKeyCredentialCreationOptions"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/v1/auth/register/verify-totp" : {
+      "post" : {
+        "operationId" : "verifyTotp",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/VerifyTotpRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
       }
     },
     "/api/v1/user/{username}" : {
+      "delete" : {
+        "operationId" : "delete",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "username",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "User deleted"
+          },
+          "404" : {
+            "description" : "No user with that username"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      },
       "get" : {
-        "tags" : [ "user-controller" ],
         "operationId" : "read",
         "parameters" : [ {
-          "name" : "username",
           "in" : "path",
+          "name" : "username",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -142,40 +503,26 @@
         } ],
         "responses" : {
           "200" : {
-            "description" : "OK",
             "content" : {
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ReadResponse"
                 }
               }
-            }
+            },
+            "description" : "The requested user"
+          },
+          "404" : {
+            "description" : "No user with that username"
           }
-        }
-      },
-      "delete" : {
-        "tags" : [ "user-controller" ],
-        "operationId" : "delete",
-        "parameters" : [ {
-          "name" : "username",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK"
-          }
-        }
+        },
+        "tags" : [ "user-controller" ]
       },
       "patch" : {
-        "tags" : [ "user-controller" ],
         "operationId" : "update",
         "parameters" : [ {
-          "name" : "username",
           "in" : "path",
+          "name" : "username",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -193,381 +540,43 @@
         },
         "responses" : {
           "200" : {
-            "description" : "OK",
             "content" : {
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ReadResponse"
                 }
               }
-            }
+            },
+            "description" : "The updated user"
+          },
+          "404" : {
+            "description" : "No user with that username"
           }
-        }
+        },
+        "tags" : [ "user-controller" ]
       }
     },
     "/api/v1/users" : {
       "get" : {
-        "tags" : [ "user-controller" ],
         "operationId" : "list",
         "responses" : {
           "200" : {
-            "description" : "OK",
             "content" : {
               "*/*" : {
                 "schema" : {
                   "type" : "object"
                 }
               }
-            }
+            },
+            "description" : "OK"
           }
-        }
-      }
-    },
-    "/api/v1" : {
-      "get" : {
-        "tags" : [ "home-controller" ],
-        "operationId" : "home",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "*/*" : {
-                "schema" : {
-                  "type" : "string"
-                }
-              }
-            }
-          }
-        }
+        },
+        "tags" : [ "user-controller" ]
       }
     }
   },
-  "components" : {
-    "schemas" : {
-      "RegisterRequest" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "email" : {
-            "type" : "string",
-            "format" : "email",
-            "minLength" : 1
-          },
-          "password" : {
-            "type" : "string",
-            "maxLength" : 2147483647,
-            "minLength" : 12
-          },
-          "firstName" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "lastName" : {
-            "type" : "string",
-            "minLength" : 1
-          }
-        },
-        "required" : [ "email", "firstName", "lastName", "password", "username" ]
-      },
-      "TotpSetupResponse" : {
-        "type" : "object",
-        "properties" : {
-          "secret" : {
-            "type" : "string"
-          },
-          "otpAuthUri" : {
-            "type" : "string"
-          }
-        }
-      },
-      "VerifyTotpRequest" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "code" : {
-            "type" : "string",
-            "maxLength" : 6,
-            "minLength" : 6
-          }
-        },
-        "required" : [ "code", "username" ]
-      },
-      "AuthenticationExtensionsClientOutputObject" : {
-        "type" : "object",
-        "properties" : {
-          "output" : { },
-          "extensionId" : {
-            "type" : "string"
-          }
-        }
-      },
-      "AuthenticationExtensionsClientOutputs" : {
-        "type" : "object",
-        "properties" : {
-          "outputs" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AuthenticationExtensionsClientOutputObject"
-            }
-          }
-        }
-      },
-      "AuthenticatorAttestationResponse" : {
-        "type" : "object",
-        "properties" : {
-          "clientDataJSON" : {
-            "type" : "string"
-          },
-          "attestationObject" : {
-            "type" : "string"
-          },
-          "transports" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "PublicKeyCredentialAuthenticatorAttestationResponse" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "type" : {
-            "type" : "string"
-          },
-          "rawId" : {
-            "type" : "string"
-          },
-          "response" : {
-            "$ref" : "#/components/schemas/AuthenticatorAttestationResponse"
-          },
-          "authenticatorAttachment" : {
-            "type" : "string"
-          },
-          "clientExtensionResults" : {
-            "$ref" : "#/components/schemas/AuthenticationExtensionsClientOutputs"
-          }
-        }
-      },
-      "RelyingPartyPublicKey" : {
-        "type" : "object",
-        "properties" : {
-          "credential" : {
-            "$ref" : "#/components/schemas/PublicKeyCredentialAuthenticatorAttestationResponse"
-          },
-          "label" : {
-            "type" : "string"
-          }
-        }
-      },
-      "PasskeyRegistrationOptionsRequest" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "email" : {
-            "type" : "string",
-            "format" : "email",
-            "minLength" : 1
-          },
-          "firstName" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "lastName" : {
-            "type" : "string",
-            "minLength" : 1
-          }
-        },
-        "required" : [ "email", "firstName", "lastName", "username" ]
-      },
-      "AuthenticationExtensionsClientInput" : {
-        "type" : "object",
-        "properties" : {
-          "extensionId" : {
-            "type" : "string"
-          },
-          "input" : { }
-        }
-      },
-      "AuthenticationExtensionsClientInputs" : {
-        "type" : "object",
-        "properties" : {
-          "inputs" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AuthenticationExtensionsClientInput"
-            }
-          }
-        }
-      },
-      "AuthenticatorSelectionCriteria" : {
-        "type" : "object",
-        "properties" : {
-          "authenticatorAttachment" : {
-            "type" : "string"
-          },
-          "residentKey" : {
-            "type" : "string"
-          },
-          "userVerification" : {
-            "type" : "string"
-          }
-        }
-      },
-      "PublicKeyCredentialCreationOptions" : {
-        "type" : "object",
-        "properties" : {
-          "rp" : {
-            "$ref" : "#/components/schemas/PublicKeyCredentialRpEntity"
-          },
-          "user" : {
-            "$ref" : "#/components/schemas/PublicKeyCredentialUserEntity"
-          },
-          "challenge" : {
-            "type" : "string"
-          },
-          "pubKeyCredParams" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/PublicKeyCredentialParameters"
-            }
-          },
-          "timeout" : {
-            "type" : "string"
-          },
-          "excludeCredentials" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/PublicKeyCredentialDescriptor"
-            }
-          },
-          "authenticatorSelection" : {
-            "$ref" : "#/components/schemas/AuthenticatorSelectionCriteria"
-          },
-          "attestation" : {
-            "type" : "string"
-          },
-          "extensions" : {
-            "$ref" : "#/components/schemas/AuthenticationExtensionsClientInputs"
-          }
-        }
-      },
-      "PublicKeyCredentialDescriptor" : {
-        "type" : "object",
-        "properties" : {
-          "type" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "transports" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            },
-            "uniqueItems" : true
-          }
-        }
-      },
-      "PublicKeyCredentialParameters" : {
-        "type" : "object",
-        "properties" : {
-          "type" : {
-            "type" : "string"
-          },
-          "alg" : {
-            "type" : "integer",
-            "format" : "int64"
-          }
-        }
-      },
-      "PublicKeyCredentialRpEntity" : {
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        }
-      },
-      "PublicKeyCredentialUserEntity" : {
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "displayName" : {
-            "type" : "string"
-          }
-        }
-      },
-      "LoginRequest" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "password" : {
-            "type" : "string",
-            "minLength" : 1
-          },
-          "totpCode" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "password", "username" ]
-      },
-      "UpdateRequest" : {
-        "type" : "object",
-        "properties" : {
-          "email" : {
-            "type" : "string",
-            "format" : "email"
-          },
-          "firstName" : {
-            "type" : "string"
-          },
-          "lastName" : {
-            "type" : "string"
-          }
-        }
-      },
-      "ReadResponse" : {
-        "type" : "object",
-        "properties" : {
-          "username" : {
-            "type" : "string"
-          },
-          "email" : {
-            "type" : "string"
-          },
-          "firstName" : {
-            "type" : "string"
-          },
-          "lastName" : {
-            "type" : "string"
-          }
-        }
-      }
-    }
-  }
+  "servers" : [ {
+    "description" : "Generated server url",
+    "url" : "http://localhost"
+  } ]
 }

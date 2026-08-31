@@ -7,5 +7,5 @@ import { Skeleton } from "@/components/ui/skeleton"
 // never render on the server.
 export const SignupFormClient = dynamic(
     () => import("@/components/signup-form").then((m) => m.SignupForm),
-    { ssr: false, loading: () => <Skeleton className="h-96 w-full" /> },
+    { ssr: false, loading: () => <p className={'shimmer text-muted-foregrond text-center'}>Initializing page&hellip;</p> },
 )

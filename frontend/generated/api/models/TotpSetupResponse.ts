@@ -21,16 +21,12 @@ import { mapValues } from '../runtime';
 export interface TotpSetupResponse {
     /**
      * 
-     * @type {string}
-     * @memberof TotpSetupResponse
-     */
-    secret?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TotpSetupResponse
      */
     otpAuthUri?: string;
+    /**
+     * 
+     */
+    secret?: string;
 }
 
 /**
@@ -50,8 +46,8 @@ export function TotpSetupResponseFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'secret': json['secret'] == null ? undefined : json['secret'],
         'otpAuthUri': json['otpAuthUri'] == null ? undefined : json['otpAuthUri'],
+        'secret': json['secret'] == null ? undefined : json['secret'],
     };
 }
 
@@ -66,8 +62,8 @@ export function TotpSetupResponseToJSONTyped(value?: TotpSetupResponse | null, i
 
     return {
         
-        'secret': value['secret'],
         'otpAuthUri': value['otpAuthUri'],
+        'secret': value['secret'],
     };
 }
 

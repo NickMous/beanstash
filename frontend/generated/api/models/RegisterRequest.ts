@@ -21,45 +21,35 @@ import { mapValues } from '../runtime';
 export interface RegisterRequest {
     /**
      * 
-     * @type {string}
-     * @memberof RegisterRequest
-     */
-    username: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RegisterRequest
      */
     email: string;
     /**
      * 
-     * @type {string}
-     * @memberof RegisterRequest
-     */
-    password: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RegisterRequest
      */
     firstName: string;
     /**
      * 
-     * @type {string}
-     * @memberof RegisterRequest
      */
     lastName: string;
+    /**
+     * 
+     */
+    password: string;
+    /**
+     * 
+     */
+    username: string;
 }
 
 /**
  * Check if a given object implements the RegisterRequest interface.
  */
 export function instanceOfRegisterRequest(value: object): value is RegisterRequest {
-    if (!('username' in value) || value['username'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
-    if (!('password' in value) || value['password'] === undefined) return false;
     if (!('firstName' in value) || value['firstName'] === undefined) return false;
     if (!('lastName' in value) || value['lastName'] === undefined) return false;
+    if (!('password' in value) || value['password'] === undefined) return false;
+    if (!('username' in value) || value['username'] === undefined) return false;
     return true;
 }
 
@@ -73,11 +63,11 @@ export function RegisterRequestFromJSONTyped(json: any, ignoreDiscriminator: boo
     }
     return {
         
-        'username': json['username'],
         'email': json['email'],
-        'password': json['password'],
         'firstName': json['firstName'],
         'lastName': json['lastName'],
+        'password': json['password'],
+        'username': json['username'],
     };
 }
 
@@ -92,11 +82,11 @@ export function RegisterRequestToJSONTyped(value?: RegisterRequest | null, ignor
 
     return {
         
-        'username': value['username'],
         'email': value['email'],
-        'password': value['password'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
+        'password': value['password'],
+        'username': value['username'],
     };
 }
 

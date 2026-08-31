@@ -1,12 +1,13 @@
 const auth = {
     "welcome-to": "Welkom bij",
     "already-have-account": "Heb je al een account?",
-    "sign-in": "Inloggen",
+    log_in: "Log in",
     "email": "E-mail",
     "username": "Gebruikersnaam",
     "first-name": "Voornaam",
     "last-name": "Achternaam",
     "password": "Wachtwoord",
+    totp_code: "TOTP-code",
     "password-hint": "Alleen nodig om te registreren met een authenticator-app.",
     "choose-method": "Kies hoe je je account wilt beveiligen.",
     "use-totp": "Registreren met authenticator-app",
@@ -29,7 +30,21 @@ const auth = {
     "verify-the-totp-code": "Verifieer de TOTP code van jouw authenticatie-app",
     "verify-totp": "TOTP Code verifiëren",
     totp_verification_completed: "Verificatie voltooid, we sturen je naar home...",
-    totp_verification_failed: "Verificatie mislukt, voer a.u.b. het gegenereerde nummer in uit je 2fa app."
+    totp_verification_failed: "Verificatie mislukt, voer a.u.b. het gegenereerde nummer in uit je 2fa app.",
+    welcome_back: "Welkom terug",
+    dont_have_an_account: "Heb je geen account?",
+    sign_up: "Maak een account",
+    log_in_with_passkey: "Log in met een passkey",
+    or: "of",
+    log_in_with_totp: "Log in met totp",
+    username_or_email: "Gebruikersnaam of e-mail",
+    follow_browser_instructions: "Volg de instructies van jouw webbrowser",
+    user_not_found: "Sorry, de gebruiker is niet gevonden!",
+    something_unexpected_happened: "Iets onverwachts gebeurde. Probeer het opnieuw!",
+    sign_up_success: {
+        title: "Account succesvol aangemaakt!",
+        description: "Log a.u.b. in om verder te gaan"
+    },
 };
 
 export default auth;

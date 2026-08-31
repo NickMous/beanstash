@@ -1,4 +1,5 @@
 import {AuthControllerApi, Configuration, HomeControllerApi, UserControllerApi} from "@/generated/api";
+import {SecurityApi} from "./securityApi";
 
 function getCookie(name: string): string | undefined {
   return document.cookie
@@ -35,3 +36,4 @@ const configuration = new Configuration({
 export const authApi = new AuthControllerApi(configuration);
 export const homeApi = new HomeControllerApi(configuration);
 export const userApi = new UserControllerApi(configuration);
+export const securityApi = new SecurityApi(configuration);

@@ -21,38 +21,30 @@ import { mapValues } from '../runtime';
 export interface PasskeyRegistrationOptionsRequest {
     /**
      * 
-     * @type {string}
-     * @memberof PasskeyRegistrationOptionsRequest
-     */
-    username: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PasskeyRegistrationOptionsRequest
      */
     email: string;
     /**
      * 
-     * @type {string}
-     * @memberof PasskeyRegistrationOptionsRequest
      */
     firstName: string;
     /**
      * 
-     * @type {string}
-     * @memberof PasskeyRegistrationOptionsRequest
      */
     lastName: string;
+    /**
+     * 
+     */
+    username: string;
 }
 
 /**
  * Check if a given object implements the PasskeyRegistrationOptionsRequest interface.
  */
 export function instanceOfPasskeyRegistrationOptionsRequest(value: object): value is PasskeyRegistrationOptionsRequest {
-    if (!('username' in value) || value['username'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('firstName' in value) || value['firstName'] === undefined) return false;
     if (!('lastName' in value) || value['lastName'] === undefined) return false;
+    if (!('username' in value) || value['username'] === undefined) return false;
     return true;
 }
 
@@ -66,10 +58,10 @@ export function PasskeyRegistrationOptionsRequestFromJSONTyped(json: any, ignore
     }
     return {
         
-        'username': json['username'],
         'email': json['email'],
         'firstName': json['firstName'],
         'lastName': json['lastName'],
+        'username': json['username'],
     };
 }
 
@@ -84,10 +76,10 @@ export function PasskeyRegistrationOptionsRequestToJSONTyped(value?: PasskeyRegi
 
     return {
         
-        'username': value['username'],
         'email': value['email'],
         'firstName': value['firstName'],
         'lastName': value['lastName'],
+        'username': value['username'],
     };
 }
 

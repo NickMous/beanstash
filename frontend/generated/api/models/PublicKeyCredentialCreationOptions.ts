@@ -64,58 +64,40 @@ import {
 export interface PublicKeyCredentialCreationOptions {
     /**
      * 
-     * @type {PublicKeyCredentialRpEntity}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    rp?: PublicKeyCredentialRpEntity;
-    /**
-     * 
-     * @type {PublicKeyCredentialUserEntity}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    user?: PublicKeyCredentialUserEntity;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    challenge?: string;
-    /**
-     * 
-     * @type {Array<PublicKeyCredentialParameters>}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    pubKeyCredParams?: Array<PublicKeyCredentialParameters>;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    timeout?: string;
-    /**
-     * 
-     * @type {Array<PublicKeyCredentialDescriptor>}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    excludeCredentials?: Array<PublicKeyCredentialDescriptor>;
-    /**
-     * 
-     * @type {AuthenticatorSelectionCriteria}
-     * @memberof PublicKeyCredentialCreationOptions
-     */
-    authenticatorSelection?: AuthenticatorSelectionCriteria;
-    /**
-     * 
-     * @type {string}
-     * @memberof PublicKeyCredentialCreationOptions
      */
     attestation?: string;
     /**
      * 
-     * @type {AuthenticationExtensionsClientInputs}
-     * @memberof PublicKeyCredentialCreationOptions
+     */
+    authenticatorSelection?: AuthenticatorSelectionCriteria;
+    /**
+     * 
+     */
+    challenge?: string;
+    /**
+     * 
+     */
+    excludeCredentials?: Array<PublicKeyCredentialDescriptor>;
+    /**
+     * 
      */
     extensions?: AuthenticationExtensionsClientInputs;
+    /**
+     * 
+     */
+    pubKeyCredParams?: Array<PublicKeyCredentialParameters>;
+    /**
+     * 
+     */
+    rp?: PublicKeyCredentialRpEntity;
+    /**
+     * 
+     */
+    timeout?: string;
+    /**
+     * 
+     */
+    user?: PublicKeyCredentialUserEntity;
 }
 
 /**
@@ -135,15 +117,15 @@ export function PublicKeyCredentialCreationOptionsFromJSONTyped(json: any, ignor
     }
     return {
         
-        'rp': json['rp'] == null ? undefined : PublicKeyCredentialRpEntityFromJSON(json['rp']),
-        'user': json['user'] == null ? undefined : PublicKeyCredentialUserEntityFromJSON(json['user']),
-        'challenge': json['challenge'] == null ? undefined : json['challenge'],
-        'pubKeyCredParams': json['pubKeyCredParams'] == null ? undefined : ((json['pubKeyCredParams'] as Array<any>).map(PublicKeyCredentialParametersFromJSON)),
-        'timeout': json['timeout'] == null ? undefined : json['timeout'],
-        'excludeCredentials': json['excludeCredentials'] == null ? undefined : ((json['excludeCredentials'] as Array<any>).map(PublicKeyCredentialDescriptorFromJSON)),
-        'authenticatorSelection': json['authenticatorSelection'] == null ? undefined : AuthenticatorSelectionCriteriaFromJSON(json['authenticatorSelection']),
         'attestation': json['attestation'] == null ? undefined : json['attestation'],
+        'authenticatorSelection': json['authenticatorSelection'] == null ? undefined : AuthenticatorSelectionCriteriaFromJSON(json['authenticatorSelection']),
+        'challenge': json['challenge'] == null ? undefined : json['challenge'],
+        'excludeCredentials': json['excludeCredentials'] == null ? undefined : ((json['excludeCredentials'] as Array<any>).map(PublicKeyCredentialDescriptorFromJSON)),
         'extensions': json['extensions'] == null ? undefined : AuthenticationExtensionsClientInputsFromJSON(json['extensions']),
+        'pubKeyCredParams': json['pubKeyCredParams'] == null ? undefined : ((json['pubKeyCredParams'] as Array<any>).map(PublicKeyCredentialParametersFromJSON)),
+        'rp': json['rp'] == null ? undefined : PublicKeyCredentialRpEntityFromJSON(json['rp']),
+        'timeout': json['timeout'] == null ? undefined : json['timeout'],
+        'user': json['user'] == null ? undefined : PublicKeyCredentialUserEntityFromJSON(json['user']),
     };
 }
 
@@ -158,15 +140,15 @@ export function PublicKeyCredentialCreationOptionsToJSONTyped(value?: PublicKeyC
 
     return {
         
-        'rp': PublicKeyCredentialRpEntityToJSON(value['rp']),
-        'user': PublicKeyCredentialUserEntityToJSON(value['user']),
-        'challenge': value['challenge'],
-        'pubKeyCredParams': value['pubKeyCredParams'] == null ? undefined : ((value['pubKeyCredParams'] as Array<any>).map(PublicKeyCredentialParametersToJSON)),
-        'timeout': value['timeout'],
-        'excludeCredentials': value['excludeCredentials'] == null ? undefined : ((value['excludeCredentials'] as Array<any>).map(PublicKeyCredentialDescriptorToJSON)),
-        'authenticatorSelection': AuthenticatorSelectionCriteriaToJSON(value['authenticatorSelection']),
         'attestation': value['attestation'],
+        'authenticatorSelection': AuthenticatorSelectionCriteriaToJSON(value['authenticatorSelection']),
+        'challenge': value['challenge'],
+        'excludeCredentials': value['excludeCredentials'] == null ? undefined : ((value['excludeCredentials'] as Array<any>).map(PublicKeyCredentialDescriptorToJSON)),
         'extensions': AuthenticationExtensionsClientInputsToJSON(value['extensions']),
+        'pubKeyCredParams': value['pubKeyCredParams'] == null ? undefined : ((value['pubKeyCredParams'] as Array<any>).map(PublicKeyCredentialParametersToJSON)),
+        'rp': PublicKeyCredentialRpEntityToJSON(value['rp']),
+        'timeout': value['timeout'],
+        'user': PublicKeyCredentialUserEntityToJSON(value['user']),
     };
 }
 
