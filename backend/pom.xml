@@ -33,8 +33,6 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
-		<jackson-2-bom.version>2.21.1</jackson-2-bom.version>
-		<jackson-bom.version>3.1.0</jackson-bom.version>
 		<sentry.upload.skip>true</sentry.upload.skip>
 		<error-prone.version>2.50.0</error-prone.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
