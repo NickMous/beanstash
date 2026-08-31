@@ -14,6 +14,8 @@ import {
 import {Skeleton} from "@/components/ui/skeleton";
 import {useQRCode} from "next-qrcode";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
+import {useRouter} from "next/navigation";
+import {toast} from "@/components/ui/toast";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
@@ -40,6 +42,7 @@ export function SignupForm({
                                ...props
                            }: React.ComponentProps<"div">) {
     const { SVG } = useQRCode();
+    const router = useRouter();
 
     const [username, setUsername] = useState(() => localStorage.getItem(LOCALSTORAGE_USERNAME_KEY) ?? "");
     const [firstName, setFirstName] = useState("");
@@ -114,6 +117,12 @@ export function SignupForm({
         }
 
         setSuccessMessage(t('registration-success'));
+        toast.add({
+            type: "success",
+            title: t('sign_up_success.title'),
+            description: t('sign_up_success.description'),
+        });
+        router.push('/login');
     }
 
     function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -162,6 +171,12 @@ export function SignupForm({
                 localStorage.removeItem(LOCALSTORAGE_EMAIL_ADDRESS_KEY);
                 localStorage.removeItem(LOCALSTORAGE_USERNAME_KEY);
                 localStorage.removeItem(LOCALSTORAGE_TOTP_AUTH_URI_KEY);
+                toast.add({
+                    type: "success",
+                    title: t('sign_up_success.title'),
+                    description: t('sign_up_success.description'),
+                });
+                router.push('/login');
             })
             .catch(() => {
                 setErrorMessage(t('totp_verification_failed'))

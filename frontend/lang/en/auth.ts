@@ -40,7 +40,11 @@ const auth = {
     username_or_email: "Username or email",
     follow_browser_instructions: "Follow your browser instructions",
     user_not_found: "Sorry, the user has not been found!",
-    something_unexpected_happened: "Something unexpected happened, try again!"
+    something_unexpected_happened: "Something unexpected happened, try again!",
+    sign_up_success: {
+        title: "Account created!",
+        description: "Please log in to continue"
+    },
 };
 
 export default auth;

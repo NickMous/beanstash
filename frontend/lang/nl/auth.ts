@@ -41,6 +41,10 @@ const auth = {
     follow_browser_instructions: "Volg de instructies van jouw webbrowser",
     user_not_found: "Sorry, de gebruiker is niet gevonden!",
     something_unexpected_happened: "Iets onverwachts gebeurde. Probeer het opnieuw!",
+    sign_up_success: {
+        title: "Account succesvol aangemaakt!",
+        description: "Log a.u.b. in om verder te gaan"
+    },
 };
 
 export default auth;
