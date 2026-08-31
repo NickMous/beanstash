@@ -37,6 +37,9 @@ const auth = {
     or: "or",
     log_in_with_totp: "Log in with totp",
     username_or_email: "Username or email",
+    follow_browser_instructions: "Follow your browser instructions",
+    user_not_found: "Sorry, the user has not been found!",
+    something_unexpected_happened: "Something unexpected happened, try again!"
 };
 
 export default auth;
