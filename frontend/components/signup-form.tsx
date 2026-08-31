@@ -16,6 +16,7 @@ import {useQRCode} from "next-qrcode";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
 import {useRouter} from "next/navigation";
 import {toast} from "@/components/ui/toast";
+import Link from "next/link";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
@@ -203,7 +204,7 @@ export function SignupForm({
                         <div className="flex flex-col items-center gap-2 text-center">
                             <h1 className="text-xl font-bold">{t('welcome-to')} Beanstash</h1>
                             <FieldDescription>
-                                {t('already-have-account')} <a href="/signin">{t('sign-in')}</a>
+                                {t('already-have-account')} <Link href="/login">{t('log_in')}</Link>
                             </FieldDescription>
                         </div>
                         <Field>

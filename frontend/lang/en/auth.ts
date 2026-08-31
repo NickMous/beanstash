@@ -1,7 +1,7 @@
 const auth = {
     "welcome-to": "Welcome to",
     "already-have-account": "Already have an account?",
-    "sign-in": "Sign in",
+    log_in: "Log in",
     "email": "Email",
     "username": "Username",
     "first-name": "First name",

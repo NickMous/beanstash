@@ -1,7 +1,7 @@
 const auth = {
     "welcome-to": "Welkom bij",
     "already-have-account": "Heb je al een account?",
-    "sign-in": "Inloggen",
+    log_in: "Log in",
     "email": "E-mail",
     "username": "Gebruikersnaam",
     "first-name": "Voornaam",
