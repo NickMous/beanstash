@@ -7,6 +7,7 @@ const auth = {
     "first-name": "Voornaam",
     "last-name": "Achternaam",
     "password": "Wachtwoord",
+    totp_code: "TOTP-code",
     "password-hint": "Alleen nodig om te registreren met een authenticator-app.",
     "choose-method": "Kies hoe je je account wilt beveiligen.",
     "use-totp": "Registreren met authenticator-app",

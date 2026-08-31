@@ -7,6 +7,7 @@ const auth = {
     "first-name": "First name",
     "last-name": "Last name",
     "password": "Password",
+    totp_code: "TOTP-code",
     "password-hint": "Only needed to sign up with an authenticator app.",
     "choose-method": "Choose how you'd like to secure your account.",
     "use-totp": "Sign up with authenticator app",
