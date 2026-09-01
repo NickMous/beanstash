@@ -6,11 +6,7 @@ metadata:
     app.kubernetes.io/name: beanstash-postgres
     app.kubernetes.io/component: database
 data:
-  # Mirror of backend/db/init.sh (used by docker-compose) — keep the two in sync.
-  # Mounted at /docker-entrypoint-initdb.d/; the postgres entrypoint runs it once,
-  # on first cluster initialisation (empty PGDATA), before Flyway migrations.
-  # Creates the least-privilege role the backend connects as. APP_USER / APP_PASSWORD
-  # are injected from the datasource credentials in postgres.yaml.
+  # Mirror of backend/db/init.sh — keep the two in sync.
   init.sh: |
     #!/bin/bash
     psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<-EOSQL

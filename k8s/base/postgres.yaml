@@ -54,9 +54,7 @@ spec:
                 secretKeyRef:
                   name: beanstash-postgres-secret
                   key: password
-            # Consumed by the /docker-entrypoint-initdb.d/init.sh script (see
-            # postgres-init-configmap.yaml) to provision the least-privilege
-            # application role. Must match the backend datasource credentials.
+            # Used by the init.sh script; must match the backend datasource creds.
             - name: APP_USER
               valueFrom:
                 secretKeyRef:
