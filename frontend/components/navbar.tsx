@@ -24,7 +24,7 @@ export function Navbar() {
             title: t('home'),
             href: "/",
         },
-    ]
+    ];
 
     return (
         <nav className="flex justify-between items-center gap-4 p-4">
