@@ -1,4 +1,6 @@
 #!/bin/bash
+# Used by docker-compose. Mirrored into Kubernetes as k8s/base/postgres-init-configmap.yaml
+# (mounted at /docker-entrypoint-initdb.d/) — keep the two copies in sync.
 psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<-EOSQL
     CREATE USER "$APP_USER" WITH PASSWORD '$APP_PASSWORD';
     GRANT CONNECT ON DATABASE "$POSTGRES_DB" TO "$APP_USER";
