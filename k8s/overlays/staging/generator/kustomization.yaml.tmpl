@@ -39,6 +39,7 @@ configMapGenerator:
     literals:
       - NEXT_PUBLIC_API_URL=https://${BRANCH_SLUG}.staging.api.beanstash.org
       - POSTGRES_HOST=${BRANCH_SLUG}-beanstash-postgres
+      - BACKEND_HOST=${BRANCH_SLUG}-beanstash-backend-service
       - SENTRY_RELEASE=sha-${COMMIT_SHA}
 
 patches:
