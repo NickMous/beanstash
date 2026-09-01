@@ -34,12 +34,26 @@
 	<properties>
 		<java.version>25</java.version>
 		<sentry.upload.skip>true</sentry.upload.skip>
+		<!-- Pins every Sentry artifact incl. the OTel agent; autoInstall is off. -->
+		<sentry.version>8.34.1</sentry.version>
 		<error-prone.version>2.50.0</error-prone.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<springdoc.version>3.1.0</springdoc.version>
 		<testcontainers.version>1.21.4</testcontainers.version>
 		<rest-assured.version>6.0.1</rest-assured.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.sentry</groupId>
+				<artifactId>sentry-bom</artifactId>
+				<version>${sentry.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<!-- Spring Boot Starters -->
@@ -119,6 +133,20 @@
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.35</version>
+		</dependency>
+
+		<!-- Monitoring (versions from sentry-bom; keep in step with the OTel agent) -->
+		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-spring-boot-4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-logback</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.sentry</groupId>
+			<artifactId>sentry-jdbc</artifactId>
 		</dependency>
 
 		<!-- Dev Tools -->
@@ -331,11 +359,38 @@
 				<version>13.0.0</version>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>stage-sentry-otel-agent</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>io.sentry</groupId>
+									<artifactId>sentry-opentelemetry-agent</artifactId>
+									<version>${sentry.version}</version>
+									<outputDirectory>${project.build.directory}/agent</outputDirectory>
+									<destFileName>sentry-opentelemetry-agent.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>io.sentry</groupId>
 				<artifactId>sentry-maven-plugin</artifactId>
 				<version>0.11.0</version>
 				<extensions>true</extensions>
 				<configuration>
+					<!-- SDK deps are declared explicitly above, pinned via sentry-bom -->
+					<skipAutoInstall>true</skipAutoInstall>
+
 					<!-- for showing output of sentry-cli -->
 					<debugSentryCli>true</debugSentryCli>
 

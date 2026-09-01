@@ -26,7 +26,7 @@ spec:
             - sh
             - -c
             - |
-              until wget -q --spider "http://${APP_SERVICE_HOST}/actuator/health" 2>/dev/null; do
+              until wget -q --spider "${APP_SERVICE_HOST}" 2>/dev/null; do
                 echo "Waiting for API..."
                 sleep 5
               done
