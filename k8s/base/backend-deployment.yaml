@@ -62,16 +62,24 @@ spec:
               cpu: "100m"
             limits:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "1000m"
+          # JVM + Sentry agent startup can take ~60s; give it up to 5 minutes
+          # before liveness/readiness (which run only after this succeeds) apply.
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            periodSeconds: 5
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: 5

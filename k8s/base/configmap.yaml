@@ -9,6 +9,8 @@ data:
   SPRING_PROFILES_ACTIVE: prod
   TZ: Europe/Amsterdam
   POSTGRES_HOST: beanstash-postgres
+  # In-cluster backend Service, used by the frontend's wait-for-api init container.
+  BACKEND_HOST: beanstash-backend-service
   NEXT_PUBLIC_API_URL: https://api.beanstash.org
   SENTRY_AUTO_INIT: "false"
   JAVA_TOOL_OPTIONS: "-javaagent:sentry-opentelemetry-agent.jar"

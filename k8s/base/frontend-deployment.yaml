@@ -26,17 +26,23 @@ spec:
             - sh
             - -c
             - |
-              until wget -q --spider "${APP_SERVICE_HOST}" 2>/dev/null; do
-                echo "Waiting for API..."
+              i=0
+              until wget -q -O /dev/null "http://${BACKEND_HOST}/actuator/health"; do
+                i=$((i + 1))
+                if [ "$i" -ge 60 ]; then
+                  echo "API still not ready after $((i * 5))s, starting anyway"
+                  exit 0
+                fi
+                echo "Waiting for API... ($i)"
                 sleep 5
               done
               echo "API is ready!"
           env:
-            - name: APP_SERVICE_HOST
+            - name: BACKEND_HOST
               valueFrom:
                 configMapKeyRef:
                   name: beanstash-config
-                  key: NEXT_PUBLIC_API_URL
+                  key: BACKEND_HOST
       containers:
         - name: frontend
           image: beanstash-frontend
