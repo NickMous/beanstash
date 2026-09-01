@@ -6,7 +6,6 @@
       "name": "beanstash",
       "dependencies": {
         "@base-ui/react": "^1.7.0",
-        "@nickmous/astro-i18n": "^0.1.0",
         "@sentry/nextjs": "^10.72.0",
         "@simplewebauthn/browser": "^13.3.0",
         "class-variance-authority": "^0.7.1",
@@ -251,8 +250,6 @@
     "@next/swc-win32-arm64-msvc": ["@next/swc-win32-arm64-msvc@16.3.3", "", { "os": "win32", "cpu": "arm64" }, "sha512-cTMUJpcEGmeywofCUfhR+rSsoE33+rVPnPEYNTNdLNlsOeEg/vktOsKUSTb28vUGqD2jkm4Zaskcwn7OCI6FQg=="],
 
     "@next/swc-win32-x64-msvc": ["@next/swc-win32-x64-msvc@16.3.3", "", { "os": "win32", "cpu": "x64" }, "sha512-2VR4cTBzHXaBjnGsuH6GyJjENzQOmHeAh11uY1iUhjm3j5dEUrVJuUj+VL78jaGi/Dik8xS76zEj18BsFhlVZQ=="],
-
-    "@nickmous/astro-i18n": ["@nickmous/astro-i18n@0.1.0", "", {}, "sha512-Gtn098wUJ/RtsJduCWgNyQqLdN3scDwaeQXBNiOYzJXSY8DcfL4Q7zJQ2wdVlBnoAFIe268jhlPDe14YAzjLwg=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 

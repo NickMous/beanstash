@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "@nickmous/astro-i18n": "^0.1.0",
     "@sentry/nextjs": "^10.72.0",
     "@simplewebauthn/browser": "^13.3.0",
     "class-variance-authority": "^0.7.1",
