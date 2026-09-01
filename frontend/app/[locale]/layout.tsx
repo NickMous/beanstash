@@ -1,8 +1,9 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono, Inter} from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import {cn} from "@/lib/utils";
 import {Toaster} from "@/components/ui/toast";
+import {NextIntlClientProvider} from "next-intl";
 
 const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
 
@@ -31,8 +32,10 @@ export default function RootLayout({
         <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-        {children}
-        <Toaster/>
+        <NextIntlClientProvider>
+            {children}
+            <Toaster/>
+        </NextIntlClientProvider>
         </body>
         </html>
     );

@@ -92,6 +92,7 @@ jobs:
           build-args: |
             SENTRY_RELEASE=sha-${{ github.sha }}
             NEXT_PUBLIC_SENTRY_DSN=${{ secrets.NEXT_PUBLIC_SENTRY_DSN }}
+            NEXT_PUBLIC_API_URL=https://${{ steps.branch.outputs.slug }}.staging.api.beanstash.org
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ steps.docker.outputs.image_name }}:buildcache

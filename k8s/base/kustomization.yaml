@@ -8,6 +8,7 @@ resources:
   - backend-service.yaml
   - frontend-service.yaml
   - postgres.yaml
+  - postgres-init-configmap.yaml
   - configmap.yaml
 
 # Common labels applied to all resources

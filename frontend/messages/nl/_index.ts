@@ -1,4 +1,4 @@
-import auth from "@/lang/nl/auth";
+import auth from "@/messages/nl/auth";
 
 const nl = {
     auth: auth

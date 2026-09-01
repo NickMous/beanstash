@@ -6,7 +6,6 @@ import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSepara
 import {Input} from "@/components/ui/input"
 import {KeyRound} from "lucide-react"
 import Link from "next/link";
-import {useTranslations} from "@/lang/utils";
 import {useState} from "react";
 import {Spinner} from "@/components/ui/spinner";
 import {authApi, securityApi} from "@/app/apiClient";
@@ -16,12 +15,13 @@ import {
     startAuthentication
 } from "@simplewebauthn/browser";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
+import {useTranslations} from "next-intl";
 
 export function LoginForm({
                               className,
                               ...props
                           }: React.ComponentProps<"div">) {
-    const t = useTranslations("en", "auth");
+    const t = useTranslations("auth");
 
     const [passkeyErrorMessage, setPasskeyErrorMessage] = useState<string | null>(null);
     const [totpErrorMessage, setTotpErrorMessage] = useState<string | null>(null);

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Mirrored in k8s/base/postgres-init-configmap.yaml — keep the two in sync.
 psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" <<-EOSQL
     CREATE USER "$APP_USER" WITH PASSWORD '$APP_PASSWORD';
     GRANT CONNECT ON DATABASE "$POSTGRES_DB" TO "$APP_USER";
