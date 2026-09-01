@@ -14,7 +14,8 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 COPY --from=build /app/src/main/resources/sentry.properties sentry.properties
 
-ADD https://repo1.maven.org/maven2/io/sentry/sentry-opentelemetry-agent/8.26.0/sentry-opentelemetry-agent-8.26.0.jar sentry-opentelemetry-agent.jar
+# Version pinned by <sentry.version> in pom.xml; staged by maven-dependency-plugin.
+COPY --from=build /app/target/agent/sentry-opentelemetry-agent.jar sentry-opentelemetry-agent.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
