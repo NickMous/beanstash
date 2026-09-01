@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button"
 import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
 import {useState} from "react";
-import {useTranslations} from "@/lang/utils";
 import {authApi} from "@/app/apiClient";
 import {
     startRegistration,
@@ -17,6 +16,7 @@ import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/compon
 import {useRouter} from "next/navigation";
 import {toast} from "@/components/ui/toast";
 import Link from "next/link";
+import {useTranslations} from "next-intl";
 
 // Minimum password length enforced by the backend (RegisterRequest @Size(min = 12)).
 const MIN_PASSWORD_LENGTH = 12;
@@ -67,7 +67,7 @@ export function SignupForm({
             : SignupStep.Register
     );
 
-    const t = useTranslations("en", "auth");
+    const t = useTranslations("auth");
 
     const commonFilled = Boolean(username && email && firstName && lastName);
 

@@ -45,6 +45,6 @@ const auth = {
         title: "Account succesvol aangemaakt!",
         description: "Log a.u.b. in om verder te gaan"
     },
-};
+} as const;
 
 export default auth;

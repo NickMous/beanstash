@@ -45,6 +45,6 @@ const auth = {
         title: "Account created!",
         description: "Please log in to continue"
     },
-};
+} as const;
 
 export default auth;
