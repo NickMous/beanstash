@@ -61,6 +61,8 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                 .permitAll()
+                .requestMatchers("/api/*/users/whoami")
+                .authenticated()
                 .requestMatchers("/api/*/users/**")
                 .permitAll()
                 // Public read: gated by the authority (granted to everyone by default), not by

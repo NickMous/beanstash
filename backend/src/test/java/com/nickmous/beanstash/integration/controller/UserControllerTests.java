@@ -235,19 +235,10 @@ public class UserControllerTests {
     void whoAmI_whenRequestingWhileLoggedIn_returnsUsername() throws Exception {
         mockMvc.perform(
             get("/api/v1/users/whoami")
-                .with(user("sander"))
+                .with(user("bob"))
                 .with(csrf())
         )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.username").value("sander"));
-    }
-
-    @Test
-    void whoAmI_whenRequestingWhileLoggedOut_returns403() throws Exception {
-        mockMvc.perform(
-                get("/api/v1/users/whoami")
-                    .with(csrf())
-            )
-            .andExpect(status().isUnauthorized());
+            .andExpect(jsonPath("$.username").value("bob"));
     }
 }

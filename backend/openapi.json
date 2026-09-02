@@ -573,6 +573,24 @@
         },
         "tags" : [ "user-controller" ]
       }
+    },
+    "/api/v1/users/whoami" : {
+      "get" : {
+        "operationId" : "whoAmI",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReadResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "user-controller" ]
+      }
     }
   },
   "servers" : [ {
