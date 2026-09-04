@@ -1,5 +1,5 @@
 import {AuthControllerApi, Configuration, HomeControllerApi, UserControllerApi} from "@/generated/api";
-import {SecurityApi} from "./securityApi";
+import {SecurityApi} from "@/api/custom/securityApi";
 
 function getCookie(name: string): string | undefined {
   return document.cookie

@@ -2,6 +2,7 @@
 
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import {ResponseError} from "@/generated/api";
 
 function makeQueryClient() {
     return new QueryClient({
@@ -9,6 +10,19 @@ function makeQueryClient() {
             queries: {
                 // Trust cached data for a minute before refetching it in the background.
                 staleTime: 60 * 1000,
+                // A 4xx is the server's final answer (unauthorised, forbidden,
+                // not found) — retrying won't change it. Keep retrying network
+                // failures and 5xx.
+                retry: (failureCount, error) => {
+                    if (
+                        error instanceof ResponseError &&
+                        error.response.status >= 400 &&
+                        error.response.status < 500
+                    ) {
+                        return false;
+                    }
+                    return failureCount < 3;
+                },
             },
         },
     });

@@ -1,14 +1,17 @@
 import {Menu} from "lucide-react";
-import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {useTranslations} from "next-intl";
 import {Link} from "@/i18n/navigation";
-import {Accordion} from "@/components/ui/accordion";
+import {Accordion, AccordionItem} from "@/components/ui/accordion";
 import {
     NavigationMenu,
     NavigationMenuItem,
     NavigationMenuList,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
+import {useQuery} from "@tanstack/react-query";
+import {whoAmIQueryOptions} from "@/api/tanstack-query-config/userApi";
+import {MobileUserActions} from "@/components/navbar/mobile-user-actions";
 
 interface IMenuItem {
     title: string;
@@ -49,6 +52,15 @@ export function Navbar() {
                             ))}
                         </Accordion>
                     </div>
+                    <SheetFooter>
+                        <div className="flex flex-col gap-6 p-4">
+                            <Accordion>
+                                <AccordionItem>
+                                    <MobileUserActions/>
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+                    </SheetFooter>
                 </SheetContent>
             </Sheet>
             <NavigationMenu className="hidden lg:block">
