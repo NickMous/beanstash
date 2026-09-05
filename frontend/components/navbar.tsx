@@ -38,10 +38,19 @@ export function Navbar() {
 
     return (
         <nav className="flex justify-between items-center gap-4 p-4">
-            <span className="font-bold lg:text-xl">
-                Beanstash
-                <span className="text-xs font-normal ml-2">(think about an icon)</span>
-            </span>
+            <div className="flex items-center gap-6">
+                <span className="font-bold lg:text-xl">
+                    Beanstash
+                    <span className="text-xs font-normal ml-2">(think about an icon)</span>
+                </span>
+                <NavigationMenu className="hidden lg:flex">
+                    <NavigationMenuList>
+                        {menuItems.map((menuItem) => (
+                            <MenuItem key={menuItem.title} menuItem={menuItem}/>
+                        ))}
+                    </NavigationMenuList>
+                </NavigationMenu>
+            </div>
             <Sheet>
                 <SheetTrigger className="lg:hidden">
                     <Menu/>
@@ -70,14 +79,7 @@ export function Navbar() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
-            <NavigationMenu className="hidden lg:block">
-                <NavigationMenuList>
-                    {menuItems.map((menuItem) => (
-                        <MenuItem key={menuItem.title} menuItem={menuItem}/>
-                    ))}
-                </NavigationMenuList>
-            </NavigationMenu>
-            <NavigationMenu className="hidden lg:block">
+            <NavigationMenu className="hidden lg:flex">
                 <NavigationMenuList>
                     <DesktopUserActions/>
                 </NavigationMenuList>
