@@ -38,7 +38,7 @@ spec:
     - websecure
   routes:
     # Allowlisted IPs bypass basic auth (higher priority)
-    - match: Host(`staging.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`))
+    - match: Host(`staging.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`) || ClientIP(`10.8.0.0/24`))
       kind: Rule
       priority: 20
       services:
@@ -98,7 +98,7 @@ spec:
     - websecure
   routes:
     # Allowlisted IPs bypass basic auth (higher priority)
-    - match: Host(`staging.api.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`))
+    - match: Host(`staging.api.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`) || ClientIP(`10.8.0.0/24`))
       kind: Rule
       priority: 20
       services:
