@@ -6,6 +6,7 @@ import {Link} from "@/i18n/navigation";
 import {useTranslations} from "next-intl";
 import {AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {securityApi} from "@/app/apiClient";
+import {SheetClose} from "@/components/ui/sheet";
 
 export function MobileUserActions() {
     const tAuth = useTranslations("auth");
@@ -20,11 +21,13 @@ export function MobileUserActions() {
     if (isPending || user === null || user === undefined) {
         return (
             <span>
-                <Link href="/login">
-                    {tAuth('log_in')}
-                </Link> {tAuth('or')} <Link href="/signup">
-                    {tAuth('sign_up')}
-                </Link>
+                <SheetClose>
+                    <Link href="/login">
+                        {tAuth('log_in')}
+                    </Link> {tAuth('or')} <Link href="/signup">
+                        {tAuth('sign_up')}
+                    </Link>
+                </SheetClose>
             </span>
         )
     }
@@ -35,7 +38,9 @@ export function MobileUserActions() {
                 {user.username}
             </AccordionTrigger>
             <AccordionContent>
-                <button onClick={logoutUser}>{tAuth('log_out')}</button>
+                <SheetClose>
+                    <button onClick={logoutUser}>{tAuth('log_out')}</button>
+                </SheetClose>
             </AccordionContent>
         </AccordionItem>
     )

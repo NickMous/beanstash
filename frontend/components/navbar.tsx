@@ -1,5 +1,13 @@
 import {Menu} from "lucide-react";
-import {Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+} from "@/components/ui/sheet";
 import {useTranslations} from "next-intl";
 import {Link} from "@/i18n/navigation";
 import {Accordion, AccordionItem} from "@/components/ui/accordion";
@@ -88,13 +96,15 @@ function MobileMenuItem({menuItem}: { menuItem: IMenuItem }) {
     }
 
     return (
-        <Link href={menuItem.href}>
-            {menuItem.title}
-        </Link>
+        <SheetClose className="w-fit">
+            <Link href={menuItem.href}>
+                {menuItem.title}
+            </Link>
+        </SheetClose>
     )
 }
 
-function MenuItem({menuItem}: {menuItem: IMenuItem}) {
+function MenuItem({menuItem}: { menuItem: IMenuItem }) {
     if (menuItem.subItems) {
         return (<p>Not implemented yet, but something with navigationmenuitem</p>)
     }
