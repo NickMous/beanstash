@@ -37,14 +37,15 @@ spec:
   entryPoints:
     - websecure
   routes:
-    # Allowlisted IPs bypass basic auth (higher priority)
-    - match: Host(`staging.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`) || ClientIP(`10.8.0.0/24`))
+    # Bypass basic auth from an allowlisted IP, or with the shared unlock cookie.
+    # Set the cookie once on .staging.beanstash.org and it carries to every branch subdomain.
+    - match: Host(`staging.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`) || ClientIP(`10.8.0.0/24`) || HeaderRegexp(`Cookie`, `(^|;\s?)stg_unlock=f3306f547eb2ed9a09f871b5f06ff9519b381e05b23ebbdc(;|$)`))
       kind: Rule
       priority: 20
       services:
         - name: beanstash-frontend-service
           port: 80
-    # All other IPs require basic auth
+    # Everyone else: basic auth
     - match: Host(`staging.beanstash.org`)
       kind: Rule
       priority: 10
@@ -97,22 +98,13 @@ spec:
   entryPoints:
     - websecure
   routes:
-    # Allowlisted IPs bypass basic auth (higher priority)
-    - match: Host(`staging.api.beanstash.org`) && (ClientIP(`83.82.205.21/32`) || ClientIP(`2001:1c02:1e04:5700::/64`) || ClientIP(`10.8.0.0/24`))
-      kind: Rule
-      priority: 20
-      services:
-        - name: beanstash-backend-service
-          port: 80
-    # All other IPs require basic auth
+    # No basic auth: a browser can't authenticate a CORS preflight, which would
+    # break every cross-origin call from the SPA. The API is gated by Spring Security.
     - match: Host(`staging.api.beanstash.org`)
       kind: Rule
-      priority: 10
       services:
         - name: beanstash-backend-service
           port: 80
-      middlewares:
-        - name: staging-basic-auth
   tls:
     secretName: beanstash-staging-tls
     options:

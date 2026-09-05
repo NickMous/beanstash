@@ -7,3 +7,6 @@ data:
   NEXT_PUBLIC_API_URL: https://staging.api.beanstash.org
   APP_URL: https://staging.beanstash.org
   APP_RP_ID: staging.beanstash.org
+  # The API host has no basic auth (see ingress.yaml); keep the API explorer closed.
+  SPRINGDOC_API_DOCS_ENABLED: "false"
+  SPRINGDOC_SWAGGER_UI_ENABLED: "false"
