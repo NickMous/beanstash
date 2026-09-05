@@ -1,7 +1,7 @@
 "use client"
 
 import {useTranslations} from "next-intl";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {whoAmIQueryOptions} from "@/api/tanstack-query-config/userApi";
 import {
     NavigationMenuContent,
@@ -9,11 +9,17 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
-import {Link} from "@/i18n/navigation";
+import {securityApi} from "@/app/apiClient";
 
 export function DesktopUserActions() {
     const tAuth = useTranslations("auth");
+    const queryClient = useQueryClient();
     const {data: user, isPending} = useQuery(whoAmIQueryOptions());
+
+    function logoutUser() {
+        securityApi.logout()
+            .then(() => queryClient.invalidateQueries(whoAmIQueryOptions()));
+    }
 
     if (isPending || user === null || user === undefined) {
         return (
@@ -32,4 +38,17 @@ export function DesktopUserActions() {
             </NavigationMenuItem>
         );
     }
+
+    return (
+        <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+            <NavigationMenuTrigger>
+                {user.username}
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+                <NavigationMenuLink href="#" onClick={logoutUser}>
+                    {tAuth('log_out')}
+                </NavigationMenuLink>
+            </NavigationMenuContent>
+        </NavigationMenuItem>
+    )
 }

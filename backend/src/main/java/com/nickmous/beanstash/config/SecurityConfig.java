@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.webauthn.api.PublicKeyCredentialRpEntity;
 import org.springframework.security.web.webauthn.jackson.WebauthnJacksonModule;
 import org.springframework.security.web.webauthn.management.JdbcPublicKeyCredentialUserEntityRepository;
@@ -75,6 +77,10 @@ public class SecurityConfig {
             // Grant user:read to not-logged-in requests by default (authenticated requests get it
             // via IpAuthorityFilter). This is what makes /api/v1/user/** publicly readable.
             .anonymous(anonymous -> anonymous.authorities("ROLE_ANONYMOUS", "user:read"))
+            // Status code instead of the default 302 redirect to /login?logout.
+            .logout(logout -> logout
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
+            )
             // Adjusts per-request authorities (adds a default authority now; IP-based
             // withdraw/add can be enabled inside the filter later). Runs after
             // authentication and before authorization so both request matchers and

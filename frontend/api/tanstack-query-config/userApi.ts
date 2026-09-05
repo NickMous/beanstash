@@ -11,7 +11,7 @@ export function whoAmIQueryOptions() {
             try {
                 return await userApi.whoAmI({signal});
             } catch (error) {
-                if (error instanceof ResponseError && error.response.status === 401) {
+                if (error instanceof ResponseError && error.response.status === 403) {
                     return null;
                 }
                 throw error;
