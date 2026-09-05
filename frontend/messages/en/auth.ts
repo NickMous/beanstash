@@ -3,6 +3,7 @@ const auth = {
     "already-have-account": "Already have an account?",
     log_in: "Log in",
     log_out: "Log out",
+    anonymous_user: "Anonymous user",
     "email": "Email",
     "username": "Username",
     "first-name": "First name",

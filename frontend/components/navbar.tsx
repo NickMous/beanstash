@@ -9,9 +9,8 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
-import {useQuery} from "@tanstack/react-query";
-import {whoAmIQueryOptions} from "@/api/tanstack-query-config/userApi";
 import {MobileUserActions} from "@/components/navbar/mobile-user-actions";
+import {DesktopUserActions} from "@/components/navbar/desktop-user-actions";
 
 interface IMenuItem {
     title: string;
@@ -68,6 +67,11 @@ export function Navbar() {
                     {menuItems.map((menuItem) => (
                         <MenuItem key={menuItem.title} menuItem={menuItem}/>
                     ))}
+                </NavigationMenuList>
+            </NavigationMenu>
+            <NavigationMenu className="hidden lg:block">
+                <NavigationMenuList>
+                    <DesktopUserActions/>
                 </NavigationMenuList>
             </NavigationMenu>
         </nav>
