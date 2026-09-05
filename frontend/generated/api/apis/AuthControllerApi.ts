@@ -14,6 +14,11 @@
 
 import * as runtime from '../runtime';
 import {
+    type CsrfToken,
+    CsrfTokenFromJSON,
+    CsrfTokenToJSON,
+} from '../models/CsrfToken';
+import {
     type LoginRequest,
     LoginRequestFromJSON,
     LoginRequestToJSON,
@@ -111,6 +116,25 @@ export interface AuthControllerApiInterface {
     /**
      */
     completePasskeyRegistration(requestParameters: CompletePasskeyRegistrationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void>;
+
+    /**
+     * Creates request options for csrf without sending the request
+     * @throws {RequiredError}
+     * @memberof AuthControllerApiInterface
+     */
+    csrfRequestOpts(): Promise<runtime.RequestOpts>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthControllerApiInterface
+     */
+    csrfRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CsrfToken>>;
+
+    /**
+     */
+    csrf(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CsrfToken>;
 
     /**
      * Creates request options for login without sending the request
@@ -245,6 +269,41 @@ export class AuthControllerApi extends runtime.BaseAPI implements AuthController
      */
     async completePasskeyRegistration(requestParameters: CompletePasskeyRegistrationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.completePasskeyRegistrationRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Creates request options for csrf without sending the request
+     */
+    async csrfRequestOpts(): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/v1/auth/csrf`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     */
+    async csrfRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CsrfToken>> {
+        const requestOptions = await this.csrfRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CsrfTokenFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async csrf(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CsrfToken> {
+        const response = await this.csrfRaw(initOverrides);
+        return await response.value();
     }
 
     /**

@@ -72,6 +72,20 @@
         },
         "type" : "object"
       },
+      "CsrfToken" : {
+        "properties" : {
+          "headerName" : {
+            "type" : "string"
+          },
+          "parameterName" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
       "LoginRequest" : {
         "properties" : {
           "password" : {
@@ -349,6 +363,24 @@
           }
         },
         "tags" : [ "home-controller" ]
+      }
+    },
+    "/api/v1/auth/csrf" : {
+      "get" : {
+        "operationId" : "csrf",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CsrfToken"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "auth-controller" ]
       }
     },
     "/api/v1/auth/login" : {

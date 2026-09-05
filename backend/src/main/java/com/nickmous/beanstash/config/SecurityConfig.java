@@ -1,7 +1,7 @@
 package com.nickmous.beanstash.config;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import tools.jackson.databind.JacksonModule;
 import java.util.List;
 import java.util.Set;
@@ -41,17 +41,12 @@ public class SecurityConfig {
     @Value("${app.rp-id}")
     private String rpId;
 
-    // Parent domain the XSRF-TOKEN cookie is scoped to, e.g. "beanstash.org", so the
-    // front-end on beanstash.org can read a cookie set by api.beanstash.org. Leave empty
-    // for local dev (host-only cookie; localhost ignores the port so it still works).
-    @Value("${app.cookie-domain:}")
-    private String cookieDomain;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .cors(Customizer.withDefaults())
-            .csrf(CsrfConfigurer::spa)
+            // Token lives in the session; the SPA reads it from GET /api/v1/auth/csrf.
+            .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
             .authorizeHttpRequests((authorize)
                 -> authorize
                 .requestMatchers("/api/*/auth/**")
