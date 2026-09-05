@@ -230,4 +230,15 @@ public class UserControllerTests {
                 .with(csrf()))
             .andExpect(status().isNotFound());
     }
+
+    @Test
+    void whoAmI_whenRequestingWhileLoggedIn_returnsUsername() throws Exception {
+        mockMvc.perform(
+            get("/api/v1/users/whoami")
+                .with(user("bob"))
+                .with(csrf())
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.username").value("bob"));
+    }
 }

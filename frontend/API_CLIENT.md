@@ -41,6 +41,16 @@ const message = await homeApi.home();
 Set `NEXT_PUBLIC_API_URL` to point at a non-local backend; it defaults to
 `http://localhost:8080`.
 
+## CSRF
+
+The backend keeps the CSRF token in the HttpSession, not a cookie, so nothing
+has to be shared across the SPA and API subdomains. `apiClient.ts` fetches the
+token from `GET /api/v1/auth/csrf` on the first unsafe request, holds it in
+memory, and sends it as `X-XSRF-TOKEN`. If the server rejects a stale token with
+`403`, the middleware refreshes it once and replays the request. It also drops
+and re-fetches the token after a successful `POST /logout`, since that ends the
+session the token lived in.
+
 ## Regenerating after an API change
 
 The two halves are separate. `backend/openapi.json` is the contract between
@@ -74,8 +84,8 @@ CI enforces both: the integration tests fail on a stale `openapi.json`, and the
 springdoc only sees `@RestController` methods, so anything Spring Security
 serves from a filter — passkey login and logout — gets no generated method.
 `app/securityApi.ts` covers those by extending `BaseAPI`, which reuses the
-`basePath`, `credentials: "include"` and `X-XSRF-TOKEN` middleware from
-`apiClient.ts` and throws the same `ResponseError` on non-2xx.
+`basePath`, `credentials: "include"` and CSRF middleware from `apiClient.ts` and
+throws the same `ResponseError` on non-2xx.
 
 ```ts
 import { securityApi } from "@/app/apiClient";

@@ -16,12 +16,15 @@ import {
 } from "@simplewebauthn/browser";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
 import {useTranslations} from "next-intl";
+import {useQueryClient} from "@tanstack/react-query";
+import {whoAmIQueryOptions} from "@/api/tanstack-query-config/userApi";
 
 export function LoginForm({
                               className,
                               ...props
                           }: React.ComponentProps<"div">) {
     const t = useTranslations("auth");
+    const queryClient = useQueryClient();
 
     const [passkeyErrorMessage, setPasskeyErrorMessage] = useState<string | null>(null);
     const [totpErrorMessage, setTotpErrorMessage] = useState<string | null>(null);
@@ -43,6 +46,7 @@ export function LoginForm({
                     resp as unknown as AuthenticationResponseJSON
                 )
                     .then(() => {
+                        queryClient.invalidateQueries(whoAmIQueryOptions());
                         console.log('Redirect user to home');
                     })
                     .catch(() => {
@@ -63,7 +67,10 @@ export function LoginForm({
                 totpCode
             }
         })
-            .then(() => console.log("Redirect to home"))
+            .then(() => {
+                queryClient.invalidateQueries(whoAmIQueryOptions());
+                console.log("Redirect to home")
+            })
             .catch(() => setTotpErrorMessage(t('something_unexpected_happened')))
     }
 

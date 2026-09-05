@@ -10,6 +10,7 @@ models/AuthenticationExtensionsClientOutputObject.ts
 models/AuthenticationExtensionsClientOutputs.ts
 models/AuthenticatorAttestationResponse.ts
 models/AuthenticatorSelectionCriteria.ts
+models/CsrfToken.ts
 models/LoginRequest.ts
 models/PasskeyRegistrationOptionsRequest.ts
 models/PublicKeyCredentialAuthenticatorAttestationResponse.ts

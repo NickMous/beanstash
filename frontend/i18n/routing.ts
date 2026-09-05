@@ -5,12 +5,12 @@ export const routing = defineRouting({
     defaultLocale: 'en',
     domains: [
         {
-            domain: 'beanstash.com',
+            domain: 'en.beanstash.org',
             defaultLocale: 'en',
             locales: ['en'],
         },
         {
-            domain: 'beanstash.nl',
+            domain: 'nl.beanstash.org',
             defaultLocale: 'nl',
             locales: ['nl']
         }

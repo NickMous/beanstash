@@ -25,10 +25,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.webauthn.api.PublicKeyCredentialCreationOptions;
 import org.springframework.security.web.webauthn.management.ImmutableRelyingPartyRegistrationRequest;
 import org.springframework.security.web.webauthn.management.RelyingPartyPublicKey;
 import org.springframework.security.web.webauthn.registration.HttpSessionPublicKeyCredentialCreationOptionsRepository;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +52,12 @@ public class AuthController {
     private final PasskeyRegistrationService passkeyRegistrationService;
     private final RoleService roleService;
     private final CustomUserDetailsService customUserDetailsService;
+
+    // Hands the session's CSRF token to the SPA so it can send it back as a header.
+    @GetMapping(path = "/csrf", version = "v1")
+    public CsrfToken csrf(CsrfToken csrfToken) {
+        return csrfToken;
+    }
 
     @PostMapping(path = "/register", version = "v1")
     public ResponseEntity<TotpSetupResponse> register(@Valid @RequestBody RegisterRequest request) {

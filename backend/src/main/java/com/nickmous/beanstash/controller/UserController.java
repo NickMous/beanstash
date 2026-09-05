@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import java.security.Principal;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -125,5 +126,21 @@ public class UserController {
         userRepository.delete(user);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(path = "/users/whoami", version = "v1")
+    public ResponseEntity<ReadResponse> whoAmI(Principal principal) {
+        String username = principal.getName();
+
+        User user = userRepository.findByUsername(username);
+
+        ReadResponse response = new ReadResponse(
+            user.getUsername(),
+            user.getEmail(),
+            user.getFirstName(),
+            user.getLastName()
+        );
+
+        return ResponseEntity.ok(response);
     }
 }

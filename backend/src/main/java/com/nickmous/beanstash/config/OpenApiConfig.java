@@ -2,6 +2,7 @@ package com.nickmous.beanstash.config;
 
 import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.webauthn.api.AttestationConveyancePreference;
 import org.springframework.security.web.webauthn.api.AuthenticatorAttachment;
 import org.springframework.security.web.webauthn.api.AuthenticatorTransport;
@@ -33,6 +34,9 @@ public class OpenApiConfig {
 
     static {
         SpringDocUtils config = SpringDocUtils.getConfig();
+
+        // CsrfToken is injected, not a request parameter — don't document it as one.
+        config.addRequestWrapperToIgnore(CsrfToken.class);
 
         // Serialized as a base64url string.
         config.replaceWithClass(Bytes.class, String.class);

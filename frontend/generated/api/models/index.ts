@@ -6,6 +6,7 @@ export * from './AuthenticationExtensionsClientOutputObject';
 export * from './AuthenticationExtensionsClientOutputs';
 export * from './AuthenticatorAttestationResponse';
 export * from './AuthenticatorSelectionCriteria';
+export * from './CsrfToken';
 export * from './LoginRequest';
 export * from './PasskeyRegistrationOptionsRequest';
 export * from './PublicKeyCredentialAuthenticatorAttestationResponse';

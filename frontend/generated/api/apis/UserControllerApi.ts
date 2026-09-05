@@ -140,6 +140,25 @@ export interface UserControllerApiInterface {
      */
     update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse>;
 
+    /**
+     * Creates request options for whoAmI without sending the request
+     * @throws {RequiredError}
+     * @memberof UserControllerApiInterface
+     */
+    whoAmIRequestOpts(): Promise<runtime.RequestOpts>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserControllerApiInterface
+     */
+    whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ReadResponse>>;
+
+    /**
+     */
+    whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse>;
+
 }
 
 /**
@@ -317,6 +336,41 @@ export class UserControllerApi extends runtime.BaseAPI implements UserController
      */
     async update(requestParameters: UpdateOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse> {
         const response = await this.updateRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Creates request options for whoAmI without sending the request
+     */
+    async whoAmIRequestOpts(): Promise<runtime.RequestOpts> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+
+        let urlPath = `/api/v1/users/whoami`;
+
+        return {
+            path: urlPath,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        };
+    }
+
+    /**
+     */
+    async whoAmIRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ReadResponse>> {
+        const requestOptions = await this.whoAmIRequestOpts();
+        const response = await this.request(requestOptions, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ReadResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async whoAmI(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ReadResponse> {
+        const response = await this.whoAmIRaw(initOverrides);
         return await response.value();
     }
 

@@ -4,6 +4,8 @@ import "../globals.css";
 import {cn} from "@/lib/utils";
 import {Toaster} from "@/components/ui/toast";
 import {NextIntlClientProvider} from "next-intl";
+import {Navbar} from "@/components/navbar";
+import {Providers} from "@/app/providers";
 
 const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
 
@@ -33,8 +35,11 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
         <NextIntlClientProvider>
-            {children}
-            <Toaster/>
+            <Providers>
+                <Navbar/>
+                {children}
+                <Toaster/>
+            </Providers>
         </NextIntlClientProvider>
         </body>
         </html>
