@@ -1,4 +1,5 @@
 import {BaseAPI} from "@/generated/api";
+import type {AuthenticationResponseJSON, PublicKeyCredentialRequestOptionsJSON} from "@simplewebauthn/browser";
 
 // Endpoints served by Spring Security's filters rather than a @RestController,
 // so springdoc never sees them and the generated client has no methods for them.

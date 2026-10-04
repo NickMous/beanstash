@@ -6,14 +6,17 @@ import {Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldSepara
 import {Input} from "@/components/ui/input"
 import {KeyRound} from "lucide-react"
 import Link from "next/link";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Spinner} from "@/components/ui/spinner";
 import {authApi, securityApi} from "@/app/apiClient";
 import {
-    AuthenticationResponseJSON,
-    type PublicKeyCredentialRequestOptionsJSON,
-    startAuthentication
+    type AuthenticationResponseJSON,
+    browserSupportsPasskeys,
+    browserSupportsWebAuthnAutofill,
+    startAuthentication,
+    WebAuthnAbortService,
 } from "@simplewebauthn/browser";
+import {isWebAuthnCancellation} from "@/lib/webauthn";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
 import {useTranslations} from "next-intl";
 import {useQueryClient} from "@tanstack/react-query";
@@ -34,29 +37,73 @@ export function LoginForm({
     const [password, setPassword] = useState("");
     const [totpCode, setTotpCode] = useState("");
 
-    function loginWithPasskey() {
+    // Optimistic so the button doesn't pop in on the (common) supported browsers.
+    const [passkeysSupported, setPasskeysSupported] = useState(true);
+
+    useEffect(() => {
+        let active = true;
+
+        browserSupportsPasskeys().then((supported) => {
+            if (active) setPasskeysSupported(supported);
+        });
+        startPasskeyAutofill(() => active);
+
+        return () => {
+            active = false;
+            WebAuthnAbortService.cancelCeremony();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- arm autofill once on mount
+    }, []);
+
+    async function completePasskeyLogin(credential: AuthenticationResponseJSON) {
+        try {
+            await securityApi.passkeyLogin(credential);
+        } catch {
+            setPasskeyErrorMessage(t('user_not_found'));
+            return false;
+        }
+        queryClient.invalidateQueries(whoAmIQueryOptions());
+        console.log('Redirect user to home');
+        return true;
+    }
+
+    // Starts a background passkey request that surfaces the user's passkeys in the
+    // username field's autofill dropdown. It stays pending until a passkey is picked,
+    // or until loginWithPasskey() replaces it (only one ceremony can run at a time).
+    async function startPasskeyAutofill(isActive: () => boolean = () => true) {
+        if (!await browserSupportsWebAuthnAutofill()) return;
+
+        try {
+            const optionsJSON = await securityApi.passkeyOptions();
+            if (!isActive()) return;
+
+            const credential = await startAuthentication({optionsJSON, useBrowserAutofill: true});
+            setPasskeyErrorMessage(null);
+            if (!await completePasskeyLogin(credential)) startPasskeyAutofill(isActive);
+        } catch (error) {
+            if (!isWebAuthnCancellation(error)) console.error("Passkey autofill failed", error);
+        }
+    }
+
+    async function loginWithPasskey() {
         setPasskeyErrorMessage(null);
         setLoadingScreenText(t('follow_browser_instructions'));
 
-        securityApi.passkeyOptions()
-            .then((resp) => startAuthentication({
-                optionsJSON: resp as unknown as PublicKeyCredentialRequestOptionsJSON
-            }))
-            .then((resp) => securityApi.passkeyLogin(
-                    resp as unknown as AuthenticationResponseJSON
-                )
-                    .then(() => {
-                        queryClient.invalidateQueries(whoAmIQueryOptions());
-                        console.log('Redirect user to home');
-                    })
-                    .catch(() => {
-                        setPasskeyErrorMessage(t('user_not_found'))
-                    })
-            )
-            .catch(() => {
-                setPasskeyErrorMessage(t('something_unexpected_happened'))
-            })
-            .finally(() => setLoadingScreenText(null))
+        let loggedIn = false;
+        try {
+            const optionsJSON = await securityApi.passkeyOptions();
+            const credential = await startAuthentication({optionsJSON});
+            loggedIn = await completePasskeyLogin(credential);
+        } catch (error) {
+            if (!isWebAuthnCancellation(error)) {
+                setPasskeyErrorMessage(t('something_unexpected_happened'));
+            }
+        } finally {
+            setLoadingScreenText(null);
+        }
+
+        // This ceremony aborted the autofill one, so re-arm it.
+        if (!loggedIn) startPasskeyAutofill();
     }
 
     function loginWithTotp() {
@@ -85,28 +132,34 @@ export function LoginForm({
                                 {t('dont_have_an_account')} <Link href={'/signup'}>{t('sign_up')}</Link>
                             </FieldDescription>
                         </div>
-                        <Field>
-                            <Button
-                                variant="outline"
-                                type="button"
-                                onClick={loginWithPasskey}
-                            >
-                                <KeyRound/>
-                                {t('log_in_with_passkey')}
-                            </Button>
-                            {passkeyErrorMessage !== null ? (
-                                <FieldError>
-                                    {passkeyErrorMessage}
-                                </FieldError>
-                            ) : null}
-                        </Field>
-                        <FieldSeparator>{t('or')}</FieldSeparator>
+                        {passkeysSupported ? (
+                            <>
+                                <Field>
+                                    <Button
+                                        variant="outline"
+                                        type="button"
+                                        onClick={loginWithPasskey}
+                                    >
+                                        <KeyRound/>
+                                        {t('log_in_with_passkey')}
+                                    </Button>
+                                    {passkeyErrorMessage !== null ? (
+                                        <FieldError>
+                                            {passkeyErrorMessage}
+                                        </FieldError>
+                                    ) : null}
+                                </Field>
+                                <FieldSeparator>{t('or')}</FieldSeparator>
+                            </>
+                        ) : null}
                         <Field>
                             <FieldLabel htmlFor="username">{t('username_or_email')}</FieldLabel>
                             <Input
                                 id="username"
                                 type="text"
                                 placeholder="m@example.com"
+                                // "webauthn" lets the browser offer passkeys in this field's autofill.
+                                autoComplete="username webauthn"
                                 required
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}

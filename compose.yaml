@@ -1,0 +1,4 @@
+# Lets Spring Boot's Docker Compose support find the backend services when the app is
+# started from the repo root (it looks for a compose file in the working directory).
+include:
+  - backend/docker-compose.yaml

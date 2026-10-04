@@ -4,12 +4,15 @@ import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator} from "@/components/ui/field"
 import {Input} from "@/components/ui/input"
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {authApi} from "@/app/apiClient";
 import {
+    browserSupportsPasskeys,
     startRegistration,
     type PublicKeyCredentialCreationOptionsJSON,
+    WebAuthnError,
 } from "@simplewebauthn/browser";
+import {isWebAuthnCancellation} from "@/lib/webauthn";
 import {Skeleton} from "@/components/ui/skeleton";
 import {useQRCode} from "next-qrcode";
 import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot} from "@/components/ui/input-otp";
@@ -53,6 +56,8 @@ export function SignupForm({
 
     const [signupMethod, setSignupMethod] = useState<SignupMethod>(SignupMethod.Unspecified);
     const [signupButtonsDisabled, setSignupButtonsDisabled] = useState(false);
+    // Optimistic so the button doesn't pop in on the (common) supported browsers.
+    const [passkeysSupported, setPasskeysSupported] = useState(true);
 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -68,6 +73,16 @@ export function SignupForm({
     );
 
     const t = useTranslations("auth");
+
+    useEffect(() => {
+        let active = true;
+        browserSupportsPasskeys().then((supported) => {
+            if (active) setPasskeysSupported(supported);
+        });
+        return () => {
+            active = false;
+        };
+    }, []);
 
     const commonFilled = Boolean(username && email && firstName && lastName);
 
@@ -107,7 +122,9 @@ export function SignupForm({
                 },
             });
         } catch (error) {
-            if (error instanceof Error && error.name === "InvalidStateError") {
+            if (isWebAuthnCancellation(error)) {
+                // The user closed the browser prompt; let them pick a method again.
+            } else if (error instanceof WebAuthnError && error.code === "ERROR_AUTHENTICATOR_PREVIOUSLY_REGISTERED") {
                 setErrorMessage(t('passkey.already-registered'));
             } else {
                 setErrorMessage(t('passkey.registration-failed'));
@@ -258,16 +275,18 @@ export function SignupForm({
                             {t('choose-method')}
                         </FieldDescription>
                         <Field className="grid gap-4">
+                            {passkeysSupported && (
+                                <Button
+                                    variant="default"
+                                    type="button"
+                                    disabled={!commonFilled || signupButtonsDisabled}
+                                    onClick={handlePasskeySignup}
+                                >
+                                    {t('use-passkey')}
+                                </Button>
+                            )}
                             <Button
-                                variant="default"
-                                type="button"
-                                disabled={!commonFilled || signupButtonsDisabled}
-                                onClick={handlePasskeySignup}
-                            >
-                                {t('use-passkey')}
-                            </Button>
-                            <Button
-                                variant="outline"
+                                variant={passkeysSupported ? "outline" : "default"}
                                 type="button"
                                 disabled={!commonFilled || signupButtonsDisabled}
                                 onClick={handleTotpSignup}
