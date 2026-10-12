@@ -3,6 +3,7 @@ package com.nickmous.beanstash.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.nickmous.beanstash.configuration.TestcontainersConfig;
+import com.nickmous.beanstash.entity.Authority;
 import com.nickmous.beanstash.entity.Role;
 import com.nickmous.beanstash.repository.RoleRepository;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ public class RoleRepositoryTests {
         Role role = roleRepository.findByName("user");
         assertThat(role).isNotNull();
         assertThat(role.getAuthorities())
-            .extracting(authority -> authority.getName())
+            .extracting(Authority::getName)
             .contains("package:read");
     }
 

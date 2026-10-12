@@ -1,6 +1,7 @@
 .openapi-generator-ignore
 apis/AuthControllerApi.ts
 apis/HomeControllerApi.ts
+apis/SearchControllerApi.ts
 apis/UserControllerApi.ts
 apis/index.ts
 index.ts
@@ -22,6 +23,9 @@ models/PublicKeyCredentialUserEntity.ts
 models/ReadResponse.ts
 models/RegisterRequest.ts
 models/RelyingPartyPublicKey.ts
+models/SearchResponse.ts
+models/SearchResult.ts
+models/SearchResultGroup.ts
 models/TotpSetupResponse.ts
 models/UpdateRequest.ts
 models/VerifyTotpRequest.ts

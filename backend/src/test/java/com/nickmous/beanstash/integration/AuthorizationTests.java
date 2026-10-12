@@ -3,6 +3,7 @@ package com.nickmous.beanstash.integration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.nickmous.beanstash.domain.search.SearchService;
 import com.nickmous.beanstash.domain.security.CustomUserDetailsService;
 import com.nickmous.beanstash.domain.security.RoleService;
 import com.nickmous.beanstash.domain.security.passkey.PasskeyRegistrationService;
@@ -42,6 +43,9 @@ public class AuthorizationTests {
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
+
+    @MockitoBean
+    private SearchService searchService;
 
     @Test
     void testUnauthorizedRequest_returns401() throws Exception {
