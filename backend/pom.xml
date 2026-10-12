@@ -35,7 +35,7 @@
 		<java.version>25</java.version>
 		<sentry.upload.skip>true</sentry.upload.skip>
 		<!-- Pins every Sentry artifact incl. the OTel agent; autoInstall is off. -->
-		<sentry.version>8.56.0</sentry.version>
+		<sentry.version>8.59.0</sentry.version>
 		<error-prone.version>2.50.0</error-prone.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<springdoc.version>3.1.1</springdoc.version>
@@ -127,7 +127,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>33.7.1-jre</version>
+			<version>33.7.2-jre</version>
 		</dependency>
 		<dependency>
 			<groupId>org.freemarker</groupId>
