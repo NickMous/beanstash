@@ -62,6 +62,8 @@ public class SecurityConfig {
                 .authenticated()
                 .requestMatchers("/api/*/users/**")
                 .permitAll()
+                .requestMatchers("/api/*/search")
+                .permitAll()
                 // Public read: gated by the authority (granted to everyone by default), not by
                 // authenticated(), so anonymous requests carrying user:read are allowed through.
                 .requestMatchers("/api/*/user/**")

@@ -179,6 +179,7 @@
             "$ref" : "#/components/schemas/PublicKeyCredentialRpEntity"
           },
           "timeout" : {
+            "format" : "duration",
             "type" : "string"
           },
           "user" : {
@@ -293,6 +294,42 @@
             "$ref" : "#/components/schemas/PublicKeyCredentialAuthenticatorAttestationResponse"
           },
           "label" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "SearchResponse" : {
+        "properties" : {
+          "results" : {
+            "items" : {
+              "$ref" : "#/components/schemas/SearchResultGroup"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "SearchResult" : {
+        "properties" : {
+          "slug" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "SearchResultGroup" : {
+        "properties" : {
+          "results" : {
+            "items" : {
+              "$ref" : "#/components/schemas/SearchResult"
+            },
+            "type" : "array"
+          },
+          "type" : {
             "type" : "string"
           }
         },
@@ -500,6 +537,34 @@
           }
         },
         "tags" : [ "auth-controller" ]
+      }
+    },
+    "/api/v1/search" : {
+      "get" : {
+        "operationId" : "search",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "query",
+          "required" : true,
+          "schema" : {
+            "maxLength" : 100,
+            "minLength" : 4,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SearchResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          }
+        },
+        "tags" : [ "search-controller" ]
       }
     },
     "/api/v1/user/{username}" : {
