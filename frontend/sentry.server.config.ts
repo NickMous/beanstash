@@ -10,10 +10,7 @@ Sentry.init({
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
   tracesSampleRate: 0.2,
 
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
-
-  // Enable sending user PII (Personally Identifiable Information)
-  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
-  sendDefaultPii: true,
+  // `sendDefaultPii: true` was removed in SDK v11: the default `dataCollection`
+  // collects user info, cookies, headers and bodies, matching the old behavior.
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#dataCollection
 });
