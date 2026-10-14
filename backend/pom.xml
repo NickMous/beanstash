@@ -35,12 +35,12 @@
 		<java.version>25</java.version>
 		<sentry.upload.skip>true</sentry.upload.skip>
 		<!-- Pins every Sentry artifact incl. the OTel agent; autoInstall is off. -->
-		<sentry.version>8.59.0</sentry.version>
+		<sentry.version>8.60.0</sentry.version>
 		<error-prone.version>2.50.0</error-prone.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<springdoc.version>3.1.1</springdoc.version>
 		<testcontainers.version>1.21.4</testcontainers.version>
-		<rest-assured.version>6.0.1</rest-assured.version>
+		<rest-assured.version>6.1.0</rest-assured.version>
 	</properties>
 
 	<dependencyManagement>
