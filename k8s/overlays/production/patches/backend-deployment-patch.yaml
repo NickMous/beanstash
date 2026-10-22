@@ -9,10 +9,11 @@ spec:
     spec:
       containers:
         - name: backend
+          # A running pod uses ~10-20m; 100m keeps the HPA's 70% CPU target
+          # meaningful. No CPU limit, so JVM startup can burst.
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "250m"
+              memory: "608Mi"
+              cpu: "100m"
             limits:
               memory: "1Gi"
-              cpu: "2000m"

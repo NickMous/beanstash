@@ -75,11 +75,10 @@ spec:
               readOnly: true
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "100m"
+              memory: "96Mi"
+              cpu: "20m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "256Mi"
           livenessProbe:
             exec:
               command:
@@ -108,6 +107,8 @@ spec:
         name: postgres-data
       spec:
         accessModes: ["ReadWriteOnce"]
+        # Both clusters mark two StorageClasses as default; pin longhorn.
+        storageClassName: longhorn
         resources:
           requests:
-            storage: 10Gi
+            storage: 1Gi

@@ -58,11 +58,10 @@ spec:
                 optional: true
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "100m"
+              memory: "448Mi"
+              cpu: "25m"
             limits:
-              memory: "512Mi"
-              cpu: "1000m"
+              memory: "768Mi"
           # JVM + Sentry agent startup can take ~60s; give it up to 5 minutes
           # before liveness/readiness (which run only after this succeeds) apply.
           startupProbe:
