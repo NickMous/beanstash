@@ -12,6 +12,8 @@ spec:
     name: beanstash-backend
   minReplicas: 2
   maxReplicas: 6
+  # CPU only: JVM and Node memory doesn't drop with load, so a memory
+  # target kept scaling up (and replacing) pods around the clock.
   metrics:
     - type: Resource
       resource:
@@ -19,12 +21,6 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300  # Wait 5 minutes before scaling down
@@ -57,6 +53,8 @@ spec:
     name: beanstash-frontend
   minReplicas: 2
   maxReplicas: 6
+  # CPU only: JVM and Node memory doesn't drop with load, so a memory
+  # target kept scaling up (and replacing) pods around the clock.
   metrics:
     - type: Resource
       resource:
@@ -64,12 +62,6 @@ spec:
         target:
           type: Utilization
           averageUtilization: 70
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300  # Wait 5 minutes before scaling down
