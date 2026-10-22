@@ -9,9 +9,11 @@ spec:
     spec:
       containers:
         - name: frontend
+          # A fresh pod uses ~100-170Mi and grows to ~260Mi over two weeks;
+          # the limit caps that growth with a restart.
           resources:
             requests:
-              memory: "320Mi"
+              memory: "192Mi"
               cpu: "50m"
             limits:
-              memory: "512Mi"
+              memory: "384Mi"
